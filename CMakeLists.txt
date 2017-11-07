@@ -14,4 +14,4 @@ link_directories (
 
 message("USER INCLUDE PATH IS ${USER_INCLUDE_PATH}")
 
-pybind11_add_module(_chomp src/chomp/_chomp/chomp.cpp)
+pybind11_add_module(_chomp src/pychomp/_chomp/chomp.cpp)
