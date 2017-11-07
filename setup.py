@@ -70,6 +70,6 @@ setup(
     packages=['pychomp'],
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
-    url = 'https://github.com/shaunharker/CHomPy',
-    download_url = 'https://github.com/shaunharker/CHomPy/archive/v0.2.tar.gz'
+    url = 'https://github.com/shaunharker/pyCHomP',
+    download_url = 'https://github.com/shaunharker/pyCHomP/archive/v0.2.tar.gz'
 )
