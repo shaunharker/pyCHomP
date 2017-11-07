@@ -1,6 +1,8 @@
 ### Braids.py
 ### MIT LICENSE 2016 Shaun Harker
 
+from _chomp import *
+
 from collections import defaultdict
 import matplotlib.pyplot as plt
 import numpy as np
@@ -102,7 +104,7 @@ def BraidComplex( braid_diagram ):
 
   thresholds = [ [float("-inf")] + sorted( [x(i,j) for i in range(0,n)] ) + [float("inf")] for j in range(0,m) ]
   # complex = CubicalComplex(CubicalGrid(thresholds))
-  complex = chomp.CubicalComplex([ len(thresholds[j]) for j in range(0,m)])
+  complex = CubicalComplex([ len(thresholds[j]) for j in range(0,m)])
   lap = lambda x : braid_diagram.lap(complex.coordinates(x))
 
   # for x in complex(complex.dimension()):

@@ -1,6 +1,7 @@
 ### ConleyMorseFibration.py
 ### MIT LICENSE 2016 Shaun Harker
 
+from _chomp import *
 from CondensationGraph import *
 from StronglyConnectedComponents import *
 from DirectedAcyclicGraph import *
@@ -42,6 +43,6 @@ def ConleyMorseFibration(complex, discrete_flow):
     for bd_cell in complex.boundary({cell}):
       mapping[bd_cell] = min(mapping.get(bd_cell,current_value), current_value)
 
-  return dag, chomp.Fibration(complex, lambda x : mapping[x])
+  return dag, Fibration(complex, lambda x : mapping[x])
 
   #return poset, chompy.Fibration(complex, lambda x : mapping[x])

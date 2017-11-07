@@ -35,7 +35,6 @@ class CMakeBuild(build_ext):
         extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
         cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
                       '-DPYTHON_EXECUTABLE=' + sys.executable,
-                      '-DCMAKE_PHAT_PATH=./phat',
                       '-DUSER_INCLUDE_PATH=./src/chomp/_chomp/include']
 
         cfg = 'Debug' if self.debug else 'Release'
@@ -60,7 +59,7 @@ class CMakeBuild(build_ext):
 
 setup(
     name='CHomP',
-    version='0.0.1',
+    version='0.1.3',
     author='Shaun Harker',
     author_email='shaun.harker@rutgers.edu',
     description='CHomP (Computational Homology Project) Python Extension',
@@ -71,4 +70,6 @@ setup(
     packages=['chomp'],
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
+    url = 'https://github.com/shaunharker/CHomPy',
+    download_url = 'https://github.com/shaunharker/CHomPy/archive/0.1.tar.gz'
 )
