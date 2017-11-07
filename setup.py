@@ -71,5 +71,5 @@ setup(
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
     url = 'https://github.com/shaunharker/CHomPy',
-    download_url = 'https://github.com/shaunharker/CHomPy/archive/0.1.tar.gz'
+    download_url = 'https://github.com/shaunharker/CHomPy/archive/v0.2.tar.gz'
 )
