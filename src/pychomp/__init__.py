@@ -1,12 +1,12 @@
 ### __init__.py
 ### MIT LICENSE 2016 Shaun Harker
 
-from _chomp import *
-from Braids import *
-from CondensationGraph import *
-from ConleyMorseFibration import *
-from DirectedAcyclicGraph import *
-from Poset import *
-from StronglyConnectedComponents import *
-from TopologicalSort import *
+from pychomp._chomp import *
+#from pychomp.Braids import *
+from pychomp.CondensationGraph import *
+from pychomp.ConleyMorseFibration import *
+from pychomp.DirectedAcyclicGraph import *
+from pychomp.Poset import *
+from pychomp.StronglyConnectedComponents import *
+from pychomp.TopologicalSort import *
 

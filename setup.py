@@ -59,7 +59,7 @@ class CMakeBuild(build_ext):
 
 setup(
     name='pyCHomP',
-    version='0.2',
+    version='0.3.0',
     author='Shaun Harker',
     author_email='shaun.harker@rutgers.edu',
     description='CHomP (Computational Homology Project) Python Extension',
@@ -71,5 +71,6 @@ setup(
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
     url = 'https://github.com/shaunharker/pyCHomP',
-    download_url = 'https://github.com/shaunharker/pyCHomP/archive/v0.2.tar.gz'
+    download_url = 'https://github.com/shaunharker/pyCHomP/archive/v0.3.tar.gz',
+    install_requires=['scipy', 'matplotlib', 'numpy']
 )

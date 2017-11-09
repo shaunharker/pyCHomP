@@ -1,8 +1,8 @@
 ### CondensationGraph.py
 ### MIT LICENSE 2016 Shaun Harker
 
-from StronglyConnectedComponents import *
-from DirectedAcyclicGraph import *
+from pychomp.StronglyConnectedComponents import *
+from pychomp.DirectedAcyclicGraph import *
 from collections import defaultdict
 
 def CondensationGraph(vertices, adjacencies):

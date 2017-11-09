@@ -1,7 +1,7 @@
 ### Braids.py
 ### MIT LICENSE 2016 Shaun Harker
 
-from _chomp import *
+from pychomp._chomp import *
 
 from collections import defaultdict
 import matplotlib.pyplot as plt
