@@ -1,4 +1,5 @@
-# CHomPy
+# pyCHomP
+
 CHomP (Computational Homology Project) with Python bindings
 
 ## Installation
