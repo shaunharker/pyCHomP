@@ -78,6 +78,8 @@ public:
     periodic_ = periodic;
 
     // Generate shapes and then sort them by dimension (which is bit popcount) to create types.
+    // for d = 4: (0D) 0, (1D) 1, 2, 4, 8, (2D) 3, 5, 6, 9, 10, 12, (3D) 7, 11, 13, 14, (4D) 15 (shapes)
+    //                 0       1  2  3  4       5  6  7  8   9  10      11  12  13  14       15 (types)
     // Implement a bijection between shapes and types via the following arrays:
     auto & ST = shape_from_type_;
     auto & TS = type_from_shape_;
@@ -352,6 +354,7 @@ CubicalComplexBinding(py::module &m) {
   py::class_<CubicalComplex, std::shared_ptr<CubicalComplex>, Complex>(m, "CubicalComplex")
     .def(py::init<>())
     .def(py::init<std::vector<Integer> const&>())
+    .def("boxes", &CubicalComplex::boxes)
     .def("coordinates", &CubicalComplex::coordinates)
     .def("cell_type", &CubicalComplex::cell_type)
     .def("cell_shape", &CubicalComplex::cell_shape)

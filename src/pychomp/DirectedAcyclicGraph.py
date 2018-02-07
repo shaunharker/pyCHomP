@@ -71,7 +71,7 @@ class DirectedAcyclicGraph:
   def transitive_closure(self):
     """ Return a new graph which is the transitive closure """
     G = self.clone ()
-    print("Transitive closure: n = " + str(len(self.vertices())) )
+    #print("Transitive closure: n = " + str(len(self.vertices())) )
     for w in self.vertices():
       for u in self.vertices():
         for v in self.vertices():
