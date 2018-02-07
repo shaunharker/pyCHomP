@@ -1,11 +1,11 @@
 ### ConleyMorseFibration.py
 ### MIT LICENSE 2016 Shaun Harker
 
-from _chomp import *
-from CondensationGraph import *
-from StronglyConnectedComponents import *
-from DirectedAcyclicGraph import *
-from Poset import *
+from pychomp._chomp import *
+from pychomp.CondensationGraph import *
+from pychomp.StronglyConnectedComponents import *
+from pychomp.DirectedAcyclicGraph import *
+from pychomp.Poset import *
 
 def ConleyMorseFibration(complex, discrete_flow):
   """
