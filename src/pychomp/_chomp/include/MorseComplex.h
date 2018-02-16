@@ -29,7 +29,6 @@ public:
     dim_ = base()->dimension();
     //std::cout << "  Dimension = " << dim_ << "\n";
     begin_.resize(dim_+2);
-    project_.resize(base() -> size(), -1);
     Integer idx = 0;
     for ( Integer d = 0; d <= dim_; ++ d ) {
       begin_[d] = Iterator(idx);
@@ -128,8 +127,7 @@ public:
   project ( Chain const& c ) {
     Chain result;
     for ( auto x : c ) { 
-      auto projected = project_[x];
-      if ( projected != -1 ) result += projected;
+      if ( project_.count(x) > 0 ) result += project_[x];
     }
     return result;
   }
@@ -201,7 +199,7 @@ private:
   std::shared_ptr<Complex> base_;
   std::shared_ptr<MorseMatching> matching_;
   std::vector<Integer> include_;
-  std::vector<Integer> project_;
+  std::unordered_map<Integer, Integer> project_;
   std::vector<Chain> bd_;
   std::vector<Chain> cbd_;
 };
