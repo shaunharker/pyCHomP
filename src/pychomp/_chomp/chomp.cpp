@@ -23,6 +23,8 @@ PYBIND11_MODULE( _chomp, m) {
   ComplexBinding(m);
   CubicalComplexBinding(m);
   MorseMatchingBinding(m);
+  CubicalMorseMatchingBinding(m);
+  GenericMorseMatchingBinding(m);
   MorseComplexBinding(m);
   HomologyBinding(m);
   FibrationBinding(m);

@@ -284,6 +284,11 @@ public:
     std::cout << "  shape(" << cell_index << ") = " << cell_shape(cell_index) << "\n";
   };
 
+  Integer
+  type_size ( void ) const {
+    return type_size_;
+  }
+
 private:
 
   std::vector<Integer> const&
@@ -299,11 +304,6 @@ private:
   std::vector<Integer> const&
   PV ( void ) const {
     return place_values_;
-  }
-
-  Integer
-  type_size ( void ) const {
-    return type_size_;
   }
 
   Integer
