@@ -65,7 +65,9 @@ public:
 
   /// delegating constructor
   MorseComplex ( std::shared_ptr<Complex> arg_base ) 
-               : MorseComplex(arg_base, std::shared_ptr<MorseMatching>(new MorseMatching(arg_base))) {}
+               : MorseComplex(arg_base, MorseMatching::compute_matching(arg_base)) {
+
+  }
 
   /// boundary
   virtual Chain

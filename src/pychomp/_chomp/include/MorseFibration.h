@@ -37,7 +37,7 @@ MorseFibration ( std::shared_ptr<Fibration> base_fibration,
 inline
 std::shared_ptr<Fibration> 
 MorseFibration ( std::shared_ptr<Fibration> base_fibration ) {
-  std::shared_ptr<MorseMatching> matching ( new  MorseMatching(base_fibration) );
+  std::shared_ptr<MorseMatching> matching ( MorseMatching::compute_matching(base_fibration) );
   return MorseFibration (base_fibration, matching);
 }
 

@@ -289,17 +289,22 @@ public:
     return type_size_;
   }
 
-private:
-
+  /// TS
+  ///   Given shape, return type
   std::vector<Integer> const&
   TS ( void ) const {
     return type_from_shape_;
   }
 
+  /// TS
+  ///   Given type, return shape
   std::vector<Integer> const&
   ST ( void ) const {
     return shape_from_type_;
   }
+
+private:
+
 
   std::vector<Integer> const&
   PV ( void ) const {

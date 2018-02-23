@@ -18,14 +18,17 @@
 class CubicalMorseMatching : public MorseMatching {
 public:
   /// CubicalMorseMatching
-  CubicalMorseMatching ( std::shared_ptr<Complex> complex_ptr ) : complex_(complex_ptr) {
+  CubicalMorseMatching ( std::shared_ptr<CubicalComplex> complex_ptr ) : complex_(complex_ptr) {
     type_size_ = complex_ -> type_size();
     fibration_.reset(new Fibration(complex_, [](Integer i){return 0;}));
   }
 
   /// CubicalMorseMatching
   CubicalMorseMatching ( std::shared_ptr<Fibration> fibration_ptr ) : fibration_(fibration_ptr) {
-    complex_.reset(fibration_->complex());
+    complex_ = std::dynamic_pointer_cast<CubicalComplex>(fibration_->complex());
+    if ( not complex_ ) {
+      throw std::invalid_argument("CubicalMorseMatching must be constructed with a Cubical Complex");
+    }
     type_size_ = complex_ -> type_size();
   }
 
@@ -60,8 +63,9 @@ private:
   //         return right
   //   return cell 
   // Note: should the complicated formulas (which are also found in CubicalComplex.h not be repeated here?
-  Integer mate ( Integer cell, Integer D ) {
+  Integer mate_ ( Integer cell, Integer D ) const {
     Integer shape = complex_ -> cell_shape(cell);
+    Integer type = complex_ -> TS() [ shape ];
     for ( Integer d = 0, bit = 1; d < D; ++ d, bit <<= 1L  ) {
       if ( shape & bit ) { // if x has extent in dimension d
         Integer left_bd = cell + complex_ -> type_size() * ( complex_ -> TS() [ shape ^ bit ] - type );
@@ -86,7 +90,7 @@ namespace py = pybind11;
 inline void
 CubicalMorseMatchingBinding(py::module &m) {
   py::class_<CubicalMorseMatching, std::shared_ptr<CubicalMorseMatching>>(m, "CubicalMorseMatching")
-    .def(py::init<std::shared_ptr<Complex>>())
+    .def(py::init<std::shared_ptr<CubicalComplex>>())
     .def(py::init<std::shared_ptr<Fibration>>())    
     .def("mate", &CubicalMorseMatching::mate)
     .def("priority", &CubicalMorseMatching::priority);

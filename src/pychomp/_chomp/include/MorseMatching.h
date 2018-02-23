@@ -21,6 +21,16 @@ public:
 
   /// priority
   virtual Integer priority ( Integer x ) const = 0;
+
+  /// compute_matching
+  static
+  std::shared_ptr<MorseMatching>
+  compute_matching ( std::shared_ptr<Complex> complex );
+
+  /// compute_matching
+  static
+  std::shared_ptr<MorseMatching>
+  compute_matching ( std::shared_ptr<Fibration> fibration );
 };
 
 /// Python Bindings
