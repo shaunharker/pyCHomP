@@ -23,7 +23,7 @@ MorseFibration ( std::shared_ptr<Fibration> base_fibration,
 
   std::shared_ptr<MorseComplex> complex ( new MorseComplex(base_fibration -> complex(), matching) );
 
-  // Convert indices of cells to compute new fibration mapping (map from cell numer to poset vertex number)
+  // Convert indices of cells to compute new fibration mapping (map from cell index to poset vertex number)
   std::vector<Integer> fibration_mapping(complex -> size());
   for ( auto x : *complex ) {
     Chain included = complex -> include ({x});
