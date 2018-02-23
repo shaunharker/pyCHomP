@@ -38,11 +38,26 @@ def ConleyMorseFibration(complex, discrete_flow):
   #             it is incident.
 
 
-  for cell in reversed(range(0,len(complex))):
-    current_value = mapping[cell]
-    for bd_cell in complex.boundary({cell}):
-      mapping[bd_cell] = min(mapping.get(bd_cell,current_value), current_value)
+  # for cell in reversed(range(0,len(complex))):
+  #   current_value = mapping[cell]
+  #   for bd_cell in complex.boundary({cell}):
+  #     mapping[bd_cell] = min(mapping.get(bd_cell,current_value), current_value)
 
-  return dag, Fibration(complex, lambda x : mapping[x])
+  def star(cell):
+    result = set()
+    stack = [ v for v in complex.coboundary({cell}) ]
+    while stack:
+      v = stack.pop()
+      if v in result: continue
+      result.add(v)
+      for u in complex.coboundary({v}):
+        stack.append(u)
+    return result
+
+  num_nontop_cells = complex.size() - complex.size(complex.dimension())
+
+  valuation = lambda x : min([mapping[z] for z in star(x) if z >= num_nontop_cells])
+
+  return dag, Fibration(complex, valuation) # lambda x : mapping[x])
 
   #return poset, chompy.Fibration(complex, lambda x : mapping[x])

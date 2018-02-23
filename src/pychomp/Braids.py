@@ -105,7 +105,14 @@ def BraidComplex( braid_diagram ):
   thresholds = [ [float("-inf")] + sorted( [x(i,j) for i in range(0,n)] ) + [float("inf")] for j in range(0,m) ]
   # complex = CubicalComplex(CubicalGrid(thresholds))
   complex = CubicalComplex([ len(thresholds[j]) for j in range(0,m)])
-  lap = lambda x : braid_diagram.lap(complex.coordinates(x))
+  
+  #lap = lambda x : braid_diagram.lap(complex.coordinates(x))
+
+  lap_dict = {}
+  def lap(x):
+    if x not in lap_dict:
+      lap_dict[x] = braid_diagram.lap(complex.coordinates(x))
+    return lap_dict[x]
 
   # for x in complex(complex.dimension()):
   #   print( str(x) + " has coordinates " + str(complex.coordinates(x)) + " and lap number " + str(lap(x)))
@@ -128,16 +135,19 @@ def BraidComplex( braid_diagram ):
   #   for a in [ a for a in complex.boundary(b) ]:
   #     coboundary[a].append(b)
 
-  # We also need to know the top cells surrounding a vertex
+  # # We also need to know the top cells surrounding a vertex
+
   def star(cell):
     result = set()
     stack = [ v for v in complex.coboundary({cell}) ]
     while stack:
       v = stack.pop()
+      if v in result: continue
       result.add(v)
       for u in complex.coboundary({v}):
         stack.append(u)
     return result
+
   ## NOTE: DRY SMELL END
 
 
