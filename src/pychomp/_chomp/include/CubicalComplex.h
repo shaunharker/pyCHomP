@@ -104,8 +104,8 @@ public:
     for ( Integer i = 0; i < M; ++ i ) {
       topstar_offset_[i] = 0;
       for ( Integer d = 0; d < dimension(); ++ d ) {
-        if ( i & (1 << d) == 0 ) { 
-          topstar_offset_[i] -= place_values_[i];
+        if ( (i & (1L << d)) == 0 ) { 
+          topstar_offset_[i] -= place_values_[d];
         }
       }
     }
@@ -188,11 +188,17 @@ public:
     // Loop through dimension()-bit bitcodes
     Integer M = 1L << dimension(); // i.e. 2^dimension()
     // Compute the topcell x we get by expanding cell to the right in all collapsed dimensions:
-    Integer x = cell + type_size() * ( (M-1) - cell_type(cell) ); // (N-1)==(2^D-1) is type of a topcell
+    Integer x = cell % type_size(); // (N-1)==(2^D-1) is type of a topcell
+    Integer offset = type_size() * (M-1);
+    // std::cout << " cell = " << cell << "\n";
+    // std::cout << "all-1's topcell = " << x << "\n";
     for ( Integer i = 0; i < M; ++ i ) {
-      if ( ~shape | i ) { // if shape bit is one, then index i bit must be on.
+      if ( (shape & ~i ) == 0 ) { // if shape bit is one, then index i bit must be on.
         // i is a valid offset
-        result.push_back(x + topstar_offset_[i]);
+        // std::cout << " shape = " << shape << " i == " << i << "\n";
+        // std::cout << " i = " << i << "\n";
+        // std::cout << " topstar_offset_[i] = " << topstar_offset_[i] << "\n";
+        result.push_back(offset + (x + topstar_offset_[i] + type_size() ) % type_size());
       } else {
         // TODO skip many invalid indices simultaneously
       }

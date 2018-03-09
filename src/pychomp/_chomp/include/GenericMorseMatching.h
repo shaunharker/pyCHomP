@@ -95,7 +95,7 @@ public:
       for ( auto y : complex.boundary({x}) ) {
         auto y_val = fibration.value(y);
         if ( y_val > x_val ) {
-          throw std::logic_error("fibration closure property failed line MorseMatching line 87");
+          throw std::logic_error("fibration closure property failed line MorseMatching line 98");
         }
         if ( x_val == y_val ) result += y;
       }
