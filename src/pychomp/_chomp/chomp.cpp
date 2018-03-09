@@ -17,6 +17,7 @@
 #include "Fibration.h"
 #include "MorseFibration.h"
 #include "ConnectionMatrix.h"
+#include "Valuation.h"
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -33,4 +34,5 @@ PYBIND11_MODULE( _chomp, m) {
   FibrationBinding(m);
   MorseFibrationBinding(m);
   ConnectionMatrixBinding(m);
+  ValuationBinding(m);
 }

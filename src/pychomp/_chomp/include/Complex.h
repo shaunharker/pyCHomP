@@ -5,8 +5,7 @@
 
 #pragma once
 
-#include <vector>
-#include <memory>
+#include "common.h"
 
 #include "Integer.h"
 #include "Iterator.h"
@@ -36,6 +35,36 @@ public:
     auto callback = [&](Integer bd_cell){result += bd_cell;};
     for ( auto x : chain ) row(x, callback);
     return result;  
+  }
+
+  /// star
+  virtual std::unordered_set<Integer>
+  star ( Integer cell ) const {
+    std::unordered_set<Integer> result;
+    std::stack<Integer> work_stack;
+    work_stack.push(cell);
+    while ( not work_stack.empty() ) {
+      auto v = work_stack.top();
+      work_stack.pop();
+      if ( result.count(v) ) continue;
+      result.insert(v);
+      for ( auto u : coboundary({v}) ) {
+        work_stack.push(u);
+      }
+    }
+    return result;
+  }
+
+  /// topstar
+  ///   return top dimensional cells in star
+  virtual std::vector<Integer>
+  topstar ( Integer cell ) const {
+    Integer N = size() - size(dimension());
+    std::vector<Integer> result;
+    for ( auto v : star(cell) ) {
+      if ( v >= N ) result.push_back(v);
+    }
+    return result;
   }
 
   /// column
@@ -115,6 +144,8 @@ ComplexBinding(py::module &m) {
     .def("coboundary", &Complex::coboundary)
     .def("column", &Complex::column)
     .def("row", &Complex::row)
+    .def("star", &Complex::star)
+    .def("topstar", &Complex::topstar)
     .def("__iter__", [](Complex const& v) {
        return py::make_iterator(v.begin(), v.end());
     }, py::keep_alive<0, 1>())

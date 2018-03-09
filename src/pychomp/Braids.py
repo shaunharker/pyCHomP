@@ -124,33 +124,6 @@ def BraidComplex( braid_diagram ):
   domains = [cell for cell in complex(m)]
   walls = [cell for cell in complex(m-1)]
 
-
-  ## NOTE: DRY SMELL BEGIN
-  # We need coboundary information
-
-  # no need for this anymore:
-
-  # coboundary = defaultdict(list)
-  # for b in complex:
-  #   for a in [ a for a in complex.boundary(b) ]:
-  #     coboundary[a].append(b)
-
-  # # We also need to know the top cells surrounding a vertex
-
-  def star(cell):
-    result = set()
-    stack = [ v for v in complex.coboundary({cell}) ]
-    while stack:
-      v = stack.pop()
-      if v in result: continue
-      result.add(v)
-      for u in complex.coboundary({v}):
-        stack.append(u)
-    return result
-
-  ## NOTE: DRY SMELL END
-
-
   # Construct the edge set
   edges = defaultdict(set)
   for wall in walls:
@@ -174,7 +147,7 @@ def BraidComplex( braid_diagram ):
   for v in collapsed_vertices:
     #print("collapsed vertex " + str(v) + " has coordinates " + str(complex.coordinates(v)) + " and shape " + str(complex.cell_shape(v)))
     #surrounding_walls = [ cell for cell in star(v) if cell.dimension() == m-1 ]
-    surrounding_walls = [ cell for cell in star(v) if cell >= walls[0] and cell <= walls[-1] ]
+    surrounding_walls = [ cell for cell in complex.star(v) if cell >= walls[0] and cell <= walls[-1] ]
 
     for wall in surrounding_walls:
       if len(complex.coboundary({wall})) == 1: continue

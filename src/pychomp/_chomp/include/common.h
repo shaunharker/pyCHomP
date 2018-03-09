@@ -18,6 +18,7 @@
 #include <functional>
 #include <queue>
 #include <limits>
+#include <stack>
 #include <boost/functional/hash.hpp>
 #include <boost/iterator/counting_iterator.hpp>
 #include <boost/range.hpp>

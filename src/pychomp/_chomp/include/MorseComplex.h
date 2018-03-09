@@ -25,7 +25,7 @@ public:
   MorseComplex ( std::shared_ptr<Complex> arg_base, 
                  std::shared_ptr<MorseMatching> arg_matching ) 
                : base_(arg_base), matching_(arg_matching) {
-    //std::cout << "MorseComplex constructor\n";
+    std::cout << "MorseComplex constructor\n";
     dim_ = base()->dimension();
     //std::cout << "  Dimension = " << dim_ << "\n";
     begin_.resize(dim_+2);
@@ -36,23 +36,23 @@ public:
       for ( auto v : (*base())(d) ) {
         //std::cout << "  Inspecting cell " << v << " with mate " << matching_ -> mate(v) << "\n";
         if ( matching_ -> mate(v) == v ) { 
-          //std::cout << "  Identified cell " << idx << "\n";
+          std::cout << "  Identified cell " << idx << "\n";
           project_[v] = idx++;
           include_.push_back(v);
         }
       }
     }
     begin_[dim_+1] = idx;
-    //std::cout << "  Total number of cells: " << idx << "\n";
+    std::cout << "  Total number of cells: " << idx << "\n";
 
     // boundary
     bd_.resize(size());
-    //std::cout << "MorseComplex. There are " << size() << " cells.\n";
+    std::cout << "MorseComplex. There are " << size() << " cells.\n";
     for ( auto ace : *this ) {
-      //std::cout << "  Computing boundary for cell ace ==" << ace << "\n";
-      //std::cout << "     include({ace}) = " << include({ace}) << "\n";
+      std::cout << "  Computing boundary for cell ace ==" << ace << "\n";
+      std::cout << "     include({ace}) = " << include({ace}) << "\n";
       bd_[ace] = lower(base()->boundary(include({ace})));
-      //std::cout << "     bd(ace) = " << bd_[ace] << "\n";
+      std::cout << "     bd(ace) = " << bd_[ace] << "\n";
     }
 
     // coboundary

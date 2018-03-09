@@ -98,6 +98,17 @@ public:
       Integer dim = popcount_(shape);
       begin_[dim] = Iterator(std::min(*begin_[dim], idx));
     }
+
+    // Set up topstar_offset_ data structure
+    topstar_offset_.resize(M);
+    for ( Integer i = 0; i < M; ++ i ) {
+      topstar_offset_[i] = 0;
+      for ( Integer d = 0; d < dimension(); ++ d ) {
+        if ( i & (1 << d) == 0 ) { 
+          topstar_offset_[i] -= place_values_[i];
+        }
+      }
+    }
   }
 
   /// boundary
@@ -166,6 +177,28 @@ public:
       }
     }
   };
+
+  /// topstar
+  ///   return top dimensional cells in star
+  ///   note: assumed twisted periodic conditions
+  virtual std::vector<Integer>
+  topstar ( Integer cell ) const {
+    std::vector<Integer> result;
+    Integer shape = cell_shape(cell);
+    // Loop through dimension()-bit bitcodes
+    Integer M = 1L << dimension(); // i.e. 2^dimension()
+    // Compute the topcell x we get by expanding cell to the right in all collapsed dimensions:
+    Integer x = cell + type_size() * ( (M-1) - cell_type(cell) ); // (N-1)==(2^D-1) is type of a topcell
+    for ( Integer i = 0; i < M; ++ i ) {
+      if ( ~shape | i ) { // if shape bit is one, then index i bit must be on.
+        // i is a valid offset
+        result.push_back(x + topstar_offset_[i]);
+      } else {
+        // TODO skip many invalid indices simultaneously
+      }
+    }
+    return result;
+  }
 
   /// Features
 
@@ -323,6 +356,7 @@ private:
   std::vector<Integer> place_values_;
   std::vector<Integer> shape_from_type_;
   std::vector<Integer> type_from_shape_;
+  std::vector<Integer> topstar_offset_;
   std::vector<bool> periodic_;
   Integer num_types_;
   Integer type_size_;
