@@ -7,30 +7,30 @@
 
 class Simplex {
 private:
-  std::vector<int> simplex_;
+  std::vector<Integer> simplex_;
   
 public:
   /// Simplex
   Simplex ( void ) {};
 
   /// Simplex
-  Simplex (std::vector<int> const& simplex ) : simplex_ ( simplex ) {}
+  Simplex (std::vector<Integer> const& simplex ) : simplex_ ( simplex ) {}
 
   /// simplex
-  std::vector < int > const&
+  std::vector < Integer > const&
   simplex ( void ) const { return simplex_; }
 
   /// simplex
-  std::vector < int > &
+  std::vector < Integer > &
   simplex ( void ) { return simplex_; }
   
   /// dimension
-  unsigned int 
+  unsigned Integer 
   dimension ( void ) const { return simplex_ . size () - 1; }
 
   /// operator []
-  int
-  operator [] ( int i ) const { return simplex_ [ i ]; }
+  Integer
+  operator [] ( Integer i ) const { return simplex_ [ i ]; }
 
   /// operator == 
   bool
@@ -45,9 +45,9 @@ public:
 };
 
 std::ostream & operator << ( std::ostream & outstream, const Simplex & s ) {
-  int size = s . simplex () . size ();
+  Integer size = s . simplex () . size ();
   outstream << "[";
-  for ( int i = 0; i < size - 1; ++ i ) {
+  for ( Integer i = 0; i < size - 1; ++ i ) {
     outstream << s . simplex () [ i ] << " ";
   }
   if ( s . simplex () . size () > 0 ) outstream << s . simplex () [ size - 1 ]; 
@@ -57,16 +57,16 @@ std::ostream & operator << ( std::ostream & outstream, const Simplex & s ) {
 
 bool Simplex::operator == ( const Simplex & rhs ) const {
   if ( dimension () != rhs . dimension () ) return false;
-  for ( unsigned int i = 0; i < simplex_ . size (); ++ i ) {
+  for ( unsigned Integer i = 0; i < simplex_ . size (); ++ i ) {
     if ( simplex_ [ i ] != rhs . simplex_ [ i ] ) return false;
   }
   return true;
 }
 
 inline
-unsigned int fvn_hash( unsigned int hash_me ) {
+unsigned Integer fvn_hash( unsigned Integer hash_me ) {
   // Fowler Noll Vo hash function.
-  unsigned int hash = 2166136261u;
+  unsigned Integer hash = 2166136261u;
   hash ^= (hash_me >> 24);
   hash *= 16777619;
   hash ^= ((hash << 8) >> 24);
@@ -81,8 +81,8 @@ unsigned int fvn_hash( unsigned int hash_me ) {
 inline
 std::size_t hash_value(Simplex const & simplex ) {  
   std::size_t seed = 0;
-  int d = simplex . dimension ();
-  for ( int i = 0; i <= d; ++ i ) {
+  Integer d = simplex . dimension ();
+  for ( Integer i = 0; i <= d; ++ i ) {
     seed += fvn_hash ( simplex [ i ] );
   }
   return seed;
@@ -106,14 +106,6 @@ public:
   ///   boundary matrix
   virtual void
   row ( Integer i, std::function<void(Integer)> const& callback) const;
-  
-  /// boundary
-  virtual void
-  boundary ( Chain * output, const Index input, int dim ) const;
-
-  /// coboundary
-  virtual void
-  coboundary ( Chain * output, const Index input, int dim ) const;
 
   /// simplex
   ///   Given a cell index, return the associated Simplex
@@ -127,20 +119,20 @@ public:
   idx ( Simplex const& s ) const;
 
   /// loadFromFile
-  ///   the file is a list of simplicies where an n-simplex is a list of integers 
-  ///   "int_1 int_2 ...  int_{n+1} \n" each representing a vertex of the complex,
-  ///   Assumption: The integers describing each simplex is listed in increasing value
+  ///   the file is a list of simplicies where an n-simplex is a list of Integeregers 
+  ///   "Integer_1 Integer_2 ...  Integer_{n+1} \n" each representing a vertex of the complex,
+  ///   Assumption: The Integeregers describing each simplex is listed in increasing value
   ///   The function reads the file and adds each simplex as well as all its faces
   ///   No one line can have more than 512 characters
   void
   loadFromFile ( const char * FileName );
 
   /// loadFromMaxSimplices
-  ///   the vector is a list of simplicies where an n-simplex is a list of integers 
-  ///   "int_1 int_2 ...  int_{n+1} \n" each representing a vertex of the complex,
-  ///   Assumption: The integers describing each simplex is listed in increasing value
+  ///   the vector is a list of simplicies where an n-simplex is a list of Integeregers 
+  ///   "Integer_1 Integer_2 ...  Integer_{n+1} \n" each representing a vertex of the complex,
+  ///   Assumption: The Integeregers describing each simplex is listed in increasing value
   void
-  loadFromMaxSimplices (std::vector< std::vector<int> > const& max_simplices);
+  loadFromMaxSimplices (std::vector< std::vector<Integer> > const& max_simplices);
   
 private:
   std::unordered_set<Simplex> processed_;
@@ -163,26 +155,26 @@ loadFromFile ( const char * FileName) {
     std::cerr << "SimplicialComplex::loadFromFile. Fatal Error:\n  " << FileName << " not found.\n";
     throw std::runtime_error("File Parsing Error: File not found");
   } /* if */
-  //int index = 0;
+  //Integer index = 0;
   
   //Simplex s;
-  std::vector< std::vector<int> > max_simplices;
+  std::vector< std::vector<Integer> > max_simplices;
   std::size_t line_number = 0;
   while ( not input_file . eof () ) {
     ++ line_number;
     std::string line;
     getline( input_file, line );
     // Check that line is sanitized. If not, throw.
-    for ( int i = 0; i < line.size(); ++ i ) {
+    for ( Integer i = 0; i < line.size(); ++ i ) {
       if ( ! ( std::isspace(line[i]) || std::isdigit(line[i]) ) ) {
         std::cerr << "SimplicialComplex::loadFromFile. Fatal Error:\n  Cannot parse line #" << line_number << " of " << FileName << "\n";
         std::cerr << " --> " << line << "\n";
         throw std::runtime_error("File Parsing Error: Invalid file");
       }
     }
-    std::vector < int > simplex;
+    std::vector < Integer > simplex;
     std::istringstream is( line );
-    int v;
+    Integer v;
     while ( is >> v ) simplex . push_back ( v );
     std::sort ( simplex . begin (), simplex . end () );
     if ( simplex.size() > 0 ) max_simplices.push_back(simplex);
@@ -194,19 +186,19 @@ loadFromFile ( const char * FileName) {
 
 
 inline void SimplicialComplex::
-loadFromMaxSimplices (const std::vector< std::vector<int> > & max_simplices) {
+loadFromMaxSimplices (const std::vector< std::vector<Integer> > & max_simplices) {
   std::unordered_set < Simplex > processed_;
   std::queue < Simplex > work_q;
-  BOOST_FOREACH ( const std::vector < int > & maximal, max_simplices ) {
+  BOOST_FOREACH ( const std::vector < Integer > & maximal, max_simplices ) {
     processed_.insert(maximal);
     if (maximal.size() == 1) continue;
     work_q.push(maximal);
     //std::cout << maximal << "\n";
     while ( not work_q.empty() ) {
       //std::cout << "Front of the queue : " << work_q.front() << "\n";
-      for ( unsigned int i = 0; i <= work_q.front().dimension(); i ++ ) {
+      for ( unsigned Integer i = 0; i <= work_q.front().dimension(); i ++ ) {
         Simplex work_simplex;
-        for (unsigned int j = 0; j <= work_q.front().dimension(); j ++ ) {
+        for (unsigned Integer j = 0; j <= work_q.front().dimension(); j ++ ) {
           if (j != i)
             work_simplex.simplex().push_back(work_q.front()[j]);
         }
@@ -240,9 +232,9 @@ inline void SimplicialComplex::
 column ( Integer i, std::function<void(Integer)> const& callback ) const { 
   Simplex s = indexToCell(input, dim);
   //std::cout << "bd(" << input << ", " << dim << ") = ";
-  for ( unsigned int i = 0; i <= s.dimension(); i++ ) {
+  for ( unsigned Integer i = 0; i <= s.dimension(); i++ ) {
     Simplex work_simplex;
-    for ( unsigned int j = 0; j <= s.dimension(); j++ ) {
+    for ( unsigned Integer j = 0; j <= s.dimension(); j++ ) {
       if ( j != i) work_simplex.simplex().push_back( s[j] );
     }
     //std::cout << "Simplex " << work_simplex << "has index " << cellToIndex(work_simplex, dim-1) << "\n";
@@ -254,7 +246,7 @@ column ( Integer i, std::function<void(Integer)> const& callback ) const {
 } /* SimplicialComplex::boundary */
 
 inline void SimplicialComplex::
-coboundary ( Chain * output, const Index input, int dim ) const {
+coboundary ( Chain * output, const Index input, Integer dim ) const {
   //std::cout << "cbd(" << input << ", " << dim << ") = ";
 
   *output = coboundaries_[dim].find(input)->second;
@@ -267,14 +259,14 @@ generateCoboundaryData ( void ) {
 // should be called by finalize()
   coboundaries_ . resize ( dimension () + 1 );
   // Insert empty chains.
-  for ( int dim = 0; dim <= dimension (); ++ dim ) {
+  for ( Integer dim = 0; dim <= dimension (); ++ dim ) {
     for ( Index i = 0; i < size ( dim ); ++ i ) {
       coboundaries_ [ dim ] . insert ( std::make_pair ( i, Chain () ) );
       coboundaries_ [ dim ] [ i ] . dimension () = dim + 1;
     }
   }
   // Fill in coboundary data
-  for ( int dim = 0; dim <= dimension (); ++ dim ) {
+  for ( Integer dim = 0; dim <= dimension (); ++ dim ) {
     for ( Index i = 0; i < size ( dim ); ++ i ) {
       Chain bd = boundary ( i, dim );
       BOOST_FOREACH ( const Term & t, bd () ) {

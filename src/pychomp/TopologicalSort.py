@@ -4,7 +4,7 @@
 
 def TopologicalSort(vertices, adjacencies):
   """
-  Topological Sort of a directed acyclic graph
+  Topological Sort of a directed acyclic graph (reverse ordered topsort)
   Example:
     vertices = [1,2,3,4,5]
     edges = [(1,2),(2,3),(2,4),(4,5),(3,5),(1,5)]

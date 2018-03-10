@@ -4,14 +4,7 @@
 
 #pragma once
 
-#include <algorithm>
-#include <cstdlib>
-#include <iostream>
-#include <memory>
-#include <numeric>
-#include <vector>
-
-#include <boost/functional/hash.hpp>
+#include "common.h"
 
 #include "Integer.h"
 #include "Iterator.h"
@@ -374,8 +367,8 @@ namespace std {
     typedef CubicalComplex argument_type;
     typedef std::size_t result_type;
     result_type operator()(argument_type const& complex) const {
-      using boost::hash_value;
-      using boost::hash_combine;
+      using pychomp::hash_value;
+      using pychomp::hash_combine;
       std::size_t seed = 0;
       for ( auto x : complex.boxes() ) {
         hash_combine(seed,hash_value(x));

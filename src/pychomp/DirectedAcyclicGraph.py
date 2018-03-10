@@ -1,7 +1,7 @@
 ### DirectedAcyclicGraph.py
 ### MIT LICENSE 2016 Shaun Harker
 
-import subprocess, copy, json, graphviz
+import subprocess, copy, json, graphviz, sys
 from collections import defaultdict
 
 # TODO: don't silently fail if given a non-DAG
@@ -69,23 +69,57 @@ class DirectedAcyclicGraph:
         for (u,v) in self.edges(): G.add_edge(v,u,self.edge_label(u,v))
         return G
     def transitive_closure(self):
-        """ Return a new graph which is the transitive closure """
-        G = self.clone ()
-        #print("Transitive closure: n = " + str(len(self.vertices())) )
-        for w in self.vertices():
-            for u in self.vertices():
-                for v in self.vertices():
-                    if w in G.adjacencies(u) and v in G.adjacencies(w):
-                        G . add_edge(u,v)
-        return G
+        TS = TopologicalSort(self.vertices(), self.adjacencies)
+        result = DirectedAcyclicGraph()
+        for v in self.vertices():
+            result.add_vertex(v)    
+        for v in self.vertices():
+            # Find vertices reachable from from v
+            reachable = set()
+            reachable.add(v)
+            for u in reversed(TS):
+                if u in reachable:
+                    for w in self.adjacencies(u):
+                        reachable.add(w)
+            for u in reachable:
+                if u != v:
+                    result.add_edge(v, u)
+        return result
+        # """ Return a new graph which is the transitive closure """
+        # G = self.clone ()
+        # #print("Transitive closure: n = " + str(len(self.vertices())) )
+        # for w in self.vertices():
+        #     for u in self.vertices():
+        #         for v in self.vertices():
+        #             if w in G.adjacencies(u) and v in G.adjacencies(w):
+        #                 G . add_edge(u,v)
+        # return G
     def transitive_reduction(self):
         """ Return a new graph which is the transitive reduction """
-        TC = self.transitive_closure ()
-        G = self.clone ()
-        for (u,v) in TC.edges():
-            for w in TC.adjacencies(v):
-                G.remove_edge(u,w)
-        return G
+        TS = TopologicalSort(self.vertices(), self.adjacencies)
+        result = DirectedAcyclicGraph()
+        for v in self.vertices():
+            result.add_vertex(v)    
+        for v in self.vertices():
+            # Find single-source longest paths from v
+            lp = { u : -1 for u in self.vertices() }
+            lp[v] = 0
+            for u in reversed(TS):
+                val = lp[u]
+                if val >= 0:
+                    for w in self.adjacencies(u):
+                        if u != w:
+                            lp[w] = max(val + 1, lp[w])
+            for u in [ w for w in lp if lp[w] == 1 ]:
+                result.add_edge(v, u)
+        return result
+
+        # TC = self.transitive_closure ()
+        # G = self.clone ()
+        # for (u,v) in TC.edges():
+        #     for w in TC.adjacencies(v):
+        #         G.remove_edge(u,w)
+        # return G
     def graphviz(self):
         """ Return a graphviz string describing the graph and its labels """
         gv = 'digraph {\n'
