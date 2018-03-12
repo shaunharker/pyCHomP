@@ -104,25 +104,6 @@ public:
     }
   }
 
-  /// boundary
-  virtual Chain
-  boundary ( Chain const& chain ) const final {
-    Chain result;
-    auto callback = [&](Integer bd_cell){result += bd_cell;};
-    for ( auto x : chain ) column(x, callback);
-    return result;
-  }
-
-
-  /// coboundary
-  virtual Chain
-  coboundary ( Chain const& chain ) const final {
-    Chain result;
-    auto callback = [&](Integer bd_cell){result += bd_cell;};
-    for ( auto x : chain ) row(x, callback);
-    return result;
-  }
-
   /// column
   virtual void
   column ( Integer cell, std::function<void(Integer)> const& callback ) const final {

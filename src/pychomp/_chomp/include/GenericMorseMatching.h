@@ -21,53 +21,6 @@ public:
   GenericMorseMatching ( std::shared_ptr<Complex> complex_ptr ) {
     std::shared_ptr<Fibration> fibration_ptr (new Fibration(complex_ptr, [](Integer i){return 0;}));
     construct(fibration_ptr);
-
-    // Complex const& complex = *complex_ptr;
-    // Integer N = complex.size();
-    // mate_.resize(N,-1);
-    // priority_.resize(N);
-    // Integer num_processed = 0;
-    // std::vector<Integer> boundary_count (N);
-    // std::unordered_set<Integer> coreducible;
-    // std::unordered_set<Integer> ace_candidates;
-
-    // for ( auto x : complex ) {
-    //   boundary_count[x] = complex.boundary({x}).size();
-    //   switch ( boundary_count[x] ) {
-    //     case 0: ace_candidates.insert(x); break;
-    //     case 1: coreducible.insert(x); break;
-    //   }
-    // }
-
-    // auto process = [&](Integer y){
-    //   priority_[y] = num_processed ++;
-    //   coreducible.erase(y);
-    //   ace_candidates.erase(y);
-    //   for ( auto x : complex.coboundary({y}) ) {
-    //     boundary_count[x] -= 1;
-    //     switch ( boundary_count[x] ) {
-    //       case 0: coreducible.erase(x); ace_candidates.insert(x); break;
-    //       case 1: coreducible.insert(x); break;
-    //     }
-    //   }
-    // };
-
-    // while ( num_processed < N ) {
-    //   if ( not coreducible.empty() ) {
-    //     Integer K, Q;
-    //     // Extract K
-    //     auto it = coreducible.begin(); K = *it; coreducible.erase(it); // pop from unordered_set
-    //     // Find mate Q
-    //     for ( auto x : complex.boundary({K}) ) if ( mate_[x] == -1 ) { Q = x; break; }
-    //     mate_[K] = Q; mate_[Q] = K;
-    //     process(Q); process(K);
-    //   } else {
-    //     Integer A;
-    //     auto it = ace_candidates.begin(); A = *it; ace_candidates.erase(it); // pop from unordered_set
-    //     mate_[A] = A;
-    //     process(A);
-    //   }
-    // }
   }
 
   /// GenericMorseMatching
@@ -146,6 +99,7 @@ public:
         process(Q); process(K);
       } else {
         Integer A;
+        // Error: what if there are zero ace candidates?
         auto it = ace_candidates.begin(); A = *it; ace_candidates.erase(it); // pop from unordered_set
         mate_[A] = A;
         process(A);
