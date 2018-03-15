@@ -4,6 +4,15 @@ import sys
 import platform
 import subprocess
 
+# Notes on packaging
+# https://packaging.python.org/tutorials/distributing-packages/#platform-wheels
+#
+# python setup.py sdist
+# python setup.py bdist_wheel
+# twine upload dist/*
+#
+# note: see also https://github.com/joerick/cibuildwheel#delivering-to-pypi
+
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 from distutils.version import LooseVersion
