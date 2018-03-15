@@ -194,7 +194,7 @@ public:
     }
     //std::cout << "  COMPLETE chain = " << canonical << "\n";
 
-    return std::tie(canonical, gamma); // TODO -- prevent copy? or optimizer already does?
+    return {canonical, gamma}; // TODO -- prevent copy? or optimizer already does?
   }
 
 private:

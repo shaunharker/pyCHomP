@@ -7,8 +7,7 @@ import subprocess
 # Notes on packaging
 # https://packaging.python.org/tutorials/distributing-packages/#platform-wheels
 #
-# python setup.py sdist
-# python setup.py bdist_wheel
+# python setup.py sdist bdist_wheel
 # twine upload dist/*
 #
 # note: see also https://github.com/joerick/cibuildwheel#delivering-to-pypi
@@ -68,7 +67,7 @@ class CMakeBuild(build_ext):
 
 setup(
     name='pyCHomP',
-    version='0.4.0',
+    version='0.4.2',
     author='Shaun Harker',
     author_email='shaun.harker@rutgers.edu',
     description='CHomP (Computational Homology Project) Python Extension',
