@@ -112,7 +112,7 @@ public:
     lldiv_t coordinate = {(int64_t)cell, 0}; // (quotient, remainder), see std::div
     for ( Integer d = 0, bit = 1; d < dimension(); ++ d, bit <<= 1L ) {
       // Determine dth coordinate
-      coordinate = std::div(static_cast<Integer>(coordinate.quot), boxes()[d] ); 
+      coordinate = std::lldiv(static_cast<Integer>(coordinate.quot), boxes()[d] ); 
       // If cell has no extent in this dimension, no boundaries.
       if ( not (shape & bit) ) continue;
       Integer offset_cell = cell + type_size() * ( TS() [ shape ^ bit ] - type );
@@ -136,7 +136,7 @@ public:
     lldiv_t coordinate = {(int64_t)cell, 0};
     for ( Integer d = 0, bit = 1; d < dimension(); ++ d, bit <<= 1L ) {
       // Determine dth coordinate
-      coordinate = std::div(static_cast<Integer>(coordinate.quot), boxes()[d] ); 
+      coordinate = std::lldiv(static_cast<Integer>(coordinate.quot), boxes()[d] ); 
       // If cell has extent in this dimension, no coboundaries.
       if ( shape & bit ) continue;
       Integer offset_cell = cell + type_size() * ( TS() [ shape ^ bit ] - type );
