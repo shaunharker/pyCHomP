@@ -4,6 +4,8 @@
 import subprocess, copy, json, graphviz, sys
 from collections import defaultdict
 
+from pychomp.TopologicalSort import *
+
 # TODO: don't silently fail if given a non-DAG
 
 class DirectedAcyclicGraph:

@@ -75,7 +75,12 @@ SimplicialComplex (std::vector<Simplex> const& max_simplices) {
   //std::cout << "SimplicialComplex " << max_simplices.size() << "\n";
   for ( auto s : max_simplices ) add_closed_simplex ( s );
   Integer N = simplices_.size();
-  std::sort(simplices_.begin(), simplices_.end(), []( Simplex const& lhs, Simplex const& rhs ){ return lhs.size() < rhs.size(); });
+  std::sort(simplices_.begin(), simplices_.end(), 
+    []( Simplex const& lhs, Simplex const& rhs ){ 
+      if (lhs.size() < rhs.size()) return true; 
+      if (lhs.size() > rhs.size()) return false;
+      return std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+    });
   idx_.clear();
   for ( Integer i = 0; i < N; ++ i ) idx_[simplices_[i]] = i;
   dim_ = -1;

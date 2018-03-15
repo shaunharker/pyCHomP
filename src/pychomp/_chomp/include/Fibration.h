@@ -7,6 +7,7 @@
 
 #include "Integer.h"
 #include "Complex.h"
+#include "Poset.h"
 
 class Fibration {
 public:
@@ -20,6 +21,12 @@ public:
     return complex_;
   }
 
+  // /// poset
+  // std::shared_ptr<Poset>
+  // poset ( void ) const {
+  //   return poset_;
+  // }
+  
   /// value
   Integer
   value ( Integer i) const {

@@ -16,8 +16,7 @@ def ConleyMorseFibration(complex, discrete_flow):
     associated top cells
   Inputs:
     complex    : a complex
-    flow_graph : an ordered pair (complex.cells(), edges)
-                 where edge edge is an ordered pair of vertices
+    flow_graph : a function from vertices to out-adjacent vertices
   Algorithm:
     Apply strongly connected components algorithm and determine
     reachability relation among the strong components to learn

@@ -19,6 +19,8 @@
 #include "ConnectionMatrix.h"
 #include "Valuation.h"
 #include "SimplicialComplex.h"
+#include "OrderComplex.h"
+#include "DualComplex.h"
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -37,4 +39,6 @@ PYBIND11_MODULE( _chomp, m) {
   ConnectionMatrixBinding(m);
   ValuationBinding(m);
   SimplicialComplexBinding(m);
+  OrderComplexBinding(m);
+  DualComplexBinding(m);
 }
