@@ -67,7 +67,7 @@ class CMakeBuild(build_ext):
 
 setup(
     name='pyCHomP',
-    version='0.4.2',
+    version='0.4.3',
     author='Shaun Harker',
     author_email='shaun.harker@rutgers.edu',
     description='CHomP (Computational Homology Project) Python Extension',
