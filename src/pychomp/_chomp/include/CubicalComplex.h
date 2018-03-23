@@ -208,7 +208,7 @@ public:
   barycenter ( Integer cell ) const {
     auto result = coordinates(cell);
     auto shape = cell_shape(cell);
-    for ( Integer i = 0, bit = 0; i < dimension(); ++ i, bit <<= (Integer) 1 ) {
+    for ( Integer i = 0, bit = 1; i < dimension(); ++ i, bit <<= (Integer) 1 ) {
       if ( shape & bit ) result[i] += 1;
     }
     return result;
