@@ -202,6 +202,18 @@ public:
     return result;
   }
 
+  /// barycenter
+  ///   Give integer barycenter ( doubled coordinates with +1 for directions with extent)
+  std::vector<Integer>
+  barycenter ( Integer cell ) const {
+    auto result = coordinates(cell);
+    auto shape = cell_shape(cell);
+    for ( Integer i = 0, bit = 0; i < dimension(); ++ i, bit <<= (Integer) 1 ) {
+      if ( shape & bit ) result[i] += 1;
+    }
+    return result;
+  }
+
   /// shape_begin
   Iterator
   shape_begin ( Integer shape ) const {
@@ -375,6 +387,7 @@ CubicalComplexBinding(py::module &m) {
     .def(py::init<std::vector<Integer> const&>())
     .def("boxes", &CubicalComplex::boxes)
     .def("coordinates", &CubicalComplex::coordinates)
+    .def("barycenter", &CubicalComplex::barycenter)    
     .def("cell_type", &CubicalComplex::cell_type)
     .def("cell_shape", &CubicalComplex::cell_shape)
     .def("cell_dim", &CubicalComplex::cell_dim)

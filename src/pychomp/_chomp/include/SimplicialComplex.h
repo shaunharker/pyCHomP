@@ -3,6 +3,8 @@
 /// MIT LICENSE
 /// 2018-03-09
 
+// todo: sort simplices upon construction
+
 #pragma once
 
 #include "common.h"
@@ -62,7 +64,7 @@ private:
   
   /// add_simplex
   bool
-  add_simplex ( Simplex const& s );
+  add_simplex ( Simplex s );
 
   /// add_closed_simplex
   void
@@ -128,7 +130,8 @@ idx ( Simplex const& s ) const {
 }
 
 inline bool SimplicialComplex::
-add_simplex (Simplex const& s) {
+add_simplex (Simplex s) {
+  std::sort(s.begin(), s.end());
   if ( idx(s) == -1 ) {
     idx_[s] = simplices_.size();
     simplices_.push_back(s);

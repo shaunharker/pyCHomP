@@ -31,7 +31,7 @@ class DrawFibration:
         #print(counts)
         def vertex_label(v):
             if v in counts:
-                return str(tuple(counts[v]))
+                return str(v) + " : " + str(tuple(counts[v]))
             else:
                 return " "
         for v in self.poset.vertices(): 
