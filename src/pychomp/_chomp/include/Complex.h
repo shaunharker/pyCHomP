@@ -37,12 +37,30 @@ public:
     return result;  
   }
 
-  /// star
+  /// closure
   virtual std::unordered_set<Integer>
-  star ( Integer cell ) const {
+  closure ( std::unordered_set<Integer> cells ) const {
     std::unordered_set<Integer> result;
     std::stack<Integer> work_stack;
-    work_stack.push(cell);
+    for ( auto cell : cells) work_stack.push(cell);
+    while ( not work_stack.empty() ) {
+      auto v = work_stack.top();
+      work_stack.pop();
+      if ( result.count(v) ) continue;
+      result.insert(v);
+      for ( auto u : boundary({v}) ) {
+        work_stack.push(u);
+      }
+    }
+    return result;
+  }
+
+  /// star
+  virtual std::unordered_set<Integer>
+  star ( std::unordered_set<Integer> cells ) const {
+    std::unordered_set<Integer> result;
+    std::stack<Integer> work_stack;
+    for ( auto cell : cells) work_stack.push(cell);
     while ( not work_stack.empty() ) {
       auto v = work_stack.top();
       work_stack.pop();
@@ -61,7 +79,7 @@ public:
   topstar ( Integer cell ) const {
     Integer N = size() - size(dimension());
     std::vector<Integer> result;
-    for ( auto v : star(cell) ) {
+    for ( auto v : star({cell}) ) {
       if ( v >= N ) result.push_back(v);
     }
     return result;
@@ -144,6 +162,7 @@ ComplexBinding(py::module &m) {
     .def("coboundary", &Complex::coboundary)
     .def("column", &Complex::column)
     .def("row", &Complex::row)
+    .def("closure", &Complex::closure)    
     .def("star", &Complex::star)
     .def("topstar", &Complex::topstar)
     .def("__iter__", [](Complex const& v) {

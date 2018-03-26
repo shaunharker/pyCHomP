@@ -70,6 +70,17 @@ class DirectedAcyclicGraph:
         for v in self.vertices(): G.add_vertex(v,self.vertex_label(v))
         for (u,v) in self.edges(): G.add_edge(v,u,self.edge_label(u,v))
         return G
+    def descendants(self, v):
+        # Find vertices reachable from from v
+        reachable = set([v])
+        workstack = [v]
+        while workstack:
+            u = workstack.pop()
+            for w in self.adjacencies(u):
+                if w not in reachable:
+                    workstack.append(w)
+                    reachable.add(w)
+        return reachable    
     def transitive_closure(self):
         TS = TopologicalSort(self.vertices(), self.adjacencies)
         result = DirectedAcyclicGraph()

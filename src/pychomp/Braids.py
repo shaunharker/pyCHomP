@@ -147,7 +147,7 @@ def BraidComplex( braid_diagram ):
   for v in collapsed_vertices:
     #print("collapsed vertex " + str(v) + " has coordinates " + str(complex.coordinates(v)) + " and shape " + str(complex.cell_shape(v)))
     #surrounding_walls = [ cell for cell in star(v) if cell.dimension() == m-1 ]
-    surrounding_walls = [ cell for cell in complex.star(v) if cell >= walls[0] and cell <= walls[-1] ]
+    surrounding_walls = [ cell for cell in complex.star({v}) if cell >= walls[0] and cell <= walls[-1] ]
 
     for wall in surrounding_walls:
       if len(complex.coboundary({wall})) == 1: continue

@@ -31,25 +31,14 @@ public:
   ///         far right, so to have a "full" cubical 
   ///         complex as a subcomplex, pad with an extra box.
   CubicalComplex ( std::vector<Integer> const& boxes ) {
-    assign ( boxes, std::vector<bool>(boxes.size(), false) );
-  }
-
-  /// CubicalComplex
-  ///   Initialize the complex that is boxes[i] boxes across 
-  ///   in dimensions d = 0, 1, ..., boxes.size() - 1
-  ///   Note: The cubical complex does not have cells on the 
-  ///         far right, so to have a "full" cubical 
-  ///         complex as a subcomplex, pad with an extra box.
-  CubicalComplex ( std::vector<Integer> const& boxes, 
-                   std::vector<bool> const& periodic ) {
-    assign ( boxes, periodic );
+    assign ( boxes );
   }
 
   /// assign
   ///   Initialize the complex that is boxes[i] boxes across 
   ///   in dimensions d = 0, 1, ..., boxes.size() - 1
   void
-  assign ( std::vector<Integer> const& boxes, std::vector<bool> const& periodic ) {
+  assign ( std::vector<Integer> const& boxes ) {
     // Get dimension
     Integer D = boxes.size();
 
@@ -68,7 +57,6 @@ public:
     dim_ = D;
     num_types_ = M;
     type_size_ = L;
-    periodic_ = periodic;
 
     // Generate shapes and then sort them by dimension (which is bit popcount) to create types.
     // for d = 4: (0D) 0, (1D) 1, 2, 4, 8, (2D) 3, 5, 6, 9, 10, 12, (3D) 7, 11, 13, 14, (4D) 15 (shapes)
@@ -108,49 +96,35 @@ public:
   virtual void
   column ( Integer cell, std::function<void(Integer)> const& callback ) const final {
     Integer shape = cell_shape(cell);
-    Integer type = TS() [ shape ];
-    lldiv_t coordinate = {(int64_t)cell, 0}; // (quotient, remainder), see std::div
+    Integer position = cell % type_size();
     for ( Integer d = 0, bit = 1; d < dimension(); ++ d, bit <<= 1L ) {
-      // Determine dth coordinate
-      coordinate = std::lldiv(static_cast<Integer>(coordinate.quot), boxes()[d] ); 
       // If cell has no extent in this dimension, no boundaries.
       if ( not (shape & bit) ) continue;
-      Integer offset_cell = cell + type_size() * ( TS() [ shape ^ bit ] - type );
+      Integer type_offset = type_size() * ( TS() [ shape ^ bit ] );
+      callback( position + type_offset );
       // Otherwise, the cell does have extent in this dimension.
       // It is always the case that such a cell has a boundary to the left.
-      callback( offset_cell );
-      // Check if there is a boundary to the right:
-      if ( coordinate.rem + 1 < boxes()[d]) { 
-        callback(offset_cell + PV()[d]);
-      } else if ( periodic_[d] ) { // for periodic
-        callback(offset_cell + PV()[d] - PV()[d+1]);     
-      }
+      Integer right_position = position + PV()[d];
+      if (right_position >= type_size()) right_position -= type_size();
+      callback( right_position + type_offset );
     }
-  };
+  }
 
   /// row
   virtual void
   row ( Integer cell, std::function<void(Integer)> const& callback ) const final {
     Integer shape = cell_shape(cell);
-    Integer type = TS() [ shape ];
-    lldiv_t coordinate = {(int64_t)cell, 0};
+    Integer position = cell % type_size();
     for ( Integer d = 0, bit = 1; d < dimension(); ++ d, bit <<= 1L ) {
-      // Determine dth coordinate
-      coordinate = std::lldiv(static_cast<Integer>(coordinate.quot), boxes()[d] ); 
       // If cell has extent in this dimension, no coboundaries.
       if ( shape & bit ) continue;
-      Integer offset_cell = cell + type_size() * ( TS() [ shape ^ bit ] - type );
-      // Otherwise, the cell does not have extent in this dimension.
-      // It is always the case that such a cell has a coboundary to the right.
-      callback( offset_cell );
-      // Check if there is a coboundary to the left:
-      if ( coordinate.rem > 0 ) { 
-        callback( offset_cell - PV()[d]);
-      } else if ( periodic_[d] ) { // for periodic
-        callback( offset_cell - PV()[d] + PV()[d+1]);
-      }
+      Integer type_offset = type_size() * ( TS() [ shape ^ bit ] );
+      callback( position + type_offset );
+      Integer left_position = position - PV()[d];
+      if (left_position < 0) left_position += type_size();
+      callback( left_position + type_offset );
     }
-  };
+  }
 
   /// topstar
   ///   return top dimensional cells in star
@@ -162,7 +136,7 @@ public:
     // Loop through dimension()-bit bitcodes
     Integer M = 1L << dimension(); // i.e. 2^dimension()
     // Compute the topcell x we get by expanding cell to the right in all collapsed dimensions:
-    Integer x = cell % type_size(); // (N-1)==(2^D-1) is type of a topcell
+    Integer position = cell % type_size(); // (M-1)==(2^D-1) is type of a topcell
     Integer offset = type_size() * (M-1);
     // std::cout << " cell = " << cell << "\n";
     // std::cout << "all-1's topcell = " << x << "\n";
@@ -172,7 +146,7 @@ public:
         // std::cout << " shape = " << shape << " i == " << i << "\n";
         // std::cout << " i = " << i << "\n";
         // std::cout << " topstar_offset_[i] = " << topstar_offset_[i] << "\n";
-        result.push_back(offset + (x + topstar_offset_[i] + type_size() ) % type_size());
+        result.push_back(offset + (position + topstar_offset_[i] + type_size() ) % type_size());
       } else {
         // TODO skip many invalid indices simultaneously
       }
@@ -180,7 +154,127 @@ public:
     return result;
   }
 
+  /// parallelneighbors
+  ///   return top dimensional cells in star
+  ///   note: assumed twisted periodic conditions
+  std::vector<Integer>
+  parallelneighbors ( Integer cell ) const {
+    Integer shape = cell_shape(cell);
+    Integer position = cell % type_size();
+    Integer type_offset = type_size() * TS() [ shape ];
+    std::vector<Integer> result;
+    auto record = [&](Integer offset) {
+      Integer k = position + offset;
+      if ( k >= type_size()) k -= type_size(); else if ( k < 0 ) k += type_size();
+      result.push_back(k + type_offset);
+    };
+    auto D = dimension();
+    std::vector<int> x(D, -1);
+    Integer offset = 0;
+    for ( Integer d = 0, bit = 1; d < D; ++ d, bit <<= (Integer) 1 ) if ( shape & bit ) offset -= PV()[d];
+    record(offset);
+    while (1) {
+      for ( Integer d = 0, bit = 1; d <= D; ++ d, bit <<= (Integer) 1 ) {
+        if ( d == D ) return result;
+        if ( shape & bit ) {
+          if ( ++x[d] == 2 ) { 
+            x[d] = -1; 
+            offset -= 2*PV()[d];
+          } else { 
+            offset += PV()[d];
+            record(offset);
+            break;
+          }
+        }
+      }
+    }
+  }
+
   /// Features
+
+  /// left
+  ///   Give cell to "left" in given dimension. 
+  ///   Note: uses "twisted" periodic boundary conditions (inconsistent with periodic and acyclic conditions)
+  Integer
+  left ( Integer cell, Integer dim ) const {
+    Integer shape = cell_shape(cell);
+    Integer bit = ((Integer)1) << dim;
+    Integer position = cell % type_size();
+    Integer type_offset = type_size() * TS() [ shape ^ bit ];
+    if ( not (shape & bit) ) position -= PV()[dim];
+    if (position < 0) position += type_size();
+    return position + type_offset;
+  }
+
+  /// right
+  ///   Give cell to "right" in given dimension. 
+  ///   Note: uses "twisted" periodic boundary conditions (inconsistent with periodic and acyclic conditions)
+  Integer
+  right ( Integer cell, Integer dim ) const {
+    Integer shape = cell_shape(cell);
+    Integer bit = ((Integer)1) << dim;
+    Integer position = cell % type_size();
+    Integer type_offset = type_size() * TS() [ shape ^ bit ];
+    if ( (shape & bit) ) position += PV()[dim];
+    if (position >= type_size()) position -= type_size();
+    return position + type_offset;
+  }
+
+  /// leftfringe
+  ///   cells for which left coboundary wraps around if periodic
+  bool
+  leftfringe ( Integer cell ) const {
+    Integer shape = cell_shape(cell);
+    lldiv_t coordinate = {(int64_t)cell, 0}; // (quotient, remainder), see std::div
+    for ( Integer d = 0, bit = 1; d < dimension(); ++ d, bit <<= 1L ) {
+      coordinate = std::lldiv(static_cast<Integer>(coordinate.quot), boxes()[d] ); 
+      if ( (shape & bit) ) continue;
+      if ( coordinate.rem == 0 ) return true;
+    }
+    return false;
+  }
+
+  /// rightfringe
+  ///    Return true if right boundary would wrap around if periodic 
+  bool
+  rightfringe ( Integer cell ) const {
+    Integer shape = cell_shape(cell);
+    lldiv_t coordinate = {(int64_t)cell, 0}; // (quotient, remainder), see std::div
+    for ( Integer d = 0, bit = 1; d < dimension(); ++ d, bit <<= 1L ) {
+      coordinate = std::lldiv(static_cast<Integer>(coordinate.quot), boxes()[d] ); 
+      if ( not (shape & bit) ) continue;
+      if ( coordinate.rem + 1 == boxes()[d]) return true;
+    }
+    return false;
+  }
+
+  /// mincoords
+  ///   Return integer with 2^i bit set for each dimension i for which 
+  ///   cell is at maximum coordinate for dimension i
+  Integer
+  mincoords ( Integer cell ) const {
+    Integer result = 0;
+    lldiv_t coordinate = {(int64_t)cell, 0}; // (quotient, remainder), see std::div
+    for ( Integer d = 0, bit = 1; d < dimension(); ++ d, bit <<= 1L ) {
+      coordinate = std::lldiv(static_cast<Integer>(coordinate.quot), boxes()[d] ); 
+      if ( coordinate.rem == 0 ) result |= bit;
+    }
+    return result;
+  }
+
+  /// maxcoords
+  ///   Return integer with 2^i bit set for each dimension i for which 
+  ///   cell is at maximum coordinate for dimension i
+  Integer
+  maxcoords ( Integer cell ) const {
+    Integer result = 0;
+    lldiv_t coordinate = {(int64_t)cell, 0}; // (quotient, remainder), see std::div
+    for ( Integer d = 0, bit = 1; d < dimension(); ++ d, bit <<= 1L ) {
+      coordinate = std::lldiv(static_cast<Integer>(coordinate.quot), boxes()[d] ); 
+      if ( coordinate.rem + 1 == boxes()[d]) result |= bit;
+    }
+    return result;
+  }
 
   /// boxes
   ///   Number of boxes across in each dimension
@@ -209,6 +303,7 @@ public:
     auto result = coordinates(cell);
     auto shape = cell_shape(cell);
     for ( Integer i = 0, bit = 1; i < dimension(); ++ i, bit <<= (Integer) 1 ) {
+      result[i] <<= (Integer) 1;
       if ( shape & bit ) result[i] += 1;
     }
     return result;
@@ -256,14 +351,6 @@ public:
     return cell;
   }
 
-  /// periodic
-  ///   Return vector reporting which dimensions
-  ///   have periodic boundary conditions
-  std::vector<bool> const&
-  periodic ( void ) const {
-    return periodic_;
-  }
-
   /// cell_dim
   ///   Return dimension of cell
   Integer
@@ -274,29 +361,20 @@ public:
   /// operator ==
   bool
   operator == ( CubicalComplex const& rhs ) const {
-    if ( boxes() != rhs.boxes() ) return false;
-    if ( periodic() != rhs.periodic() ) return false;
-    return true;
+    return boxes() == rhs.boxes();
   }
 
   /// operator <
   bool
   operator < ( CubicalComplex const& rhs ) const {
-    if ( boxes() != rhs.boxes() ) {
-      return std::lexicographical_compare(boxes().begin(), boxes().end(),
+    return std::lexicographical_compare(boxes().begin(), boxes().end(),
                                           rhs.boxes().begin(), rhs.boxes().end());
-    } else {
-      return std::lexicographical_compare(periodic().begin(), periodic().end(),
-                                          rhs.periodic().begin(), rhs.periodic().end());
-    }
   }
 
   /// operator <<
   friend std::ostream & operator << ( std::ostream & stream, CubicalComplex const& stream_me ) {
     stream << "CubicalComplex([";
     for ( auto x : stream_me.boxes() ) stream << x << ",";
-    stream <<  "],["; 
-    for ( auto x : stream_me.periodic() ) stream << ( x ? "T" : "F") << ",";
     return stream << "])";
   }
 
@@ -307,7 +385,7 @@ public:
     std::cout << "  coordinates(" << cell_index << ") = [";
     for ( auto x : coordinates(cell_index) ) std::cout << x << ", "; std::cout << "]\n";
     std::cout << "  shape(" << cell_index << ") = " << cell_shape(cell_index) << "\n";
-  };
+  }
 
   Integer
   type_size ( void ) const {
@@ -349,7 +427,6 @@ private:
   std::vector<Integer> shape_from_type_;
   std::vector<Integer> type_from_shape_;
   std::vector<Integer> topstar_offset_;
-  std::vector<bool> periodic_;
   Integer num_types_;
   Integer type_size_;
 };
@@ -365,10 +442,7 @@ namespace std {
       std::size_t seed = 0;
       for ( auto x : complex.boxes() ) {
         hash_combine(seed,hash_value(x));
-      }     
-      for ( auto x : complex.periodic() ) {
-        hash_combine(seed,hash_value( x ? 1L : 0L ));
-      }       
+      }         
       return seed;
     }
   };
@@ -391,5 +465,12 @@ CubicalComplexBinding(py::module &m) {
     .def("cell_type", &CubicalComplex::cell_type)
     .def("cell_shape", &CubicalComplex::cell_shape)
     .def("cell_dim", &CubicalComplex::cell_dim)
-    .def("cell_index", &CubicalComplex::cell_index);
+    .def("cell_index", &CubicalComplex::cell_index)
+    .def("left", &CubicalComplex::left)
+    .def("right", &CubicalComplex::right)
+    .def("leftfringe", &CubicalComplex::leftfringe)
+    .def("rightfringe", &CubicalComplex::rightfringe)
+    .def("mincoords", &CubicalComplex::mincoords)
+    .def("maxcoords", &CubicalComplex::maxcoords)
+    .def("parallelneighbors", &CubicalComplex::parallelneighbors);
 }

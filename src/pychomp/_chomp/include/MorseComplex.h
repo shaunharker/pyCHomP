@@ -28,6 +28,7 @@ public:
     //std::cout << "MorseComplex constructor\n";
     dim_ = base()->dimension();
     //std::cout << "  Dimension = " << dim_ << "\n";
+    std::vector<std::pair<Integer,Integer>> critical;
     begin_.resize(dim_+2);
     Integer idx = 0;
     for ( Integer d = 0; d <= dim_; ++ d ) {
@@ -37,7 +38,8 @@ public:
         //std::cout << "  Inspecting cell " << v << " with mate " << matching_ -> mate(v) << "\n";
         if ( matching_ -> mate(v) == v ) { 
           //std::cout << "  Identified cell " << idx << "\n";
-          project_[v] = idx++;
+          critical.push_back({v, idx});
+          ++idx;
           include_.push_back(v);
         }
       }
@@ -45,9 +47,12 @@ public:
     begin_[dim_+1] = idx;
     //std::cout << "  Total number of cells: " << idx << "\n";
 
+    project_ = std::unordered_map<Integer, Integer>(critical.begin(), critical.end());
+
     // boundary
     bd_.resize(size());
     //std::cout << "MorseComplex. There are " << size() << " cells.\n";
+    //std::cout << "MorseComplex. Computing boundary.\n";
     for ( auto ace : *this ) {
       //std::cout << "  Computing boundary for cell ace ==" << ace << "\n";
       //std::cout << "     include({ace}) = " << include({ace}) << "\n";
@@ -55,6 +60,7 @@ public:
       //std::cout << "     bd(ace) = " << bd_[ace] << "\n";
     }
 
+    //std::cout << "MorseComplex. Computing coboundary.\n";
     // coboundary
     cbd_.resize(size());
     for ( auto ace : *this ) {

@@ -12,8 +12,8 @@ class Poset:
     Create a Poset P from a DAG G such that x <= y in P iff there is a path from x to y in G 
     """
     self.vertices_ = set(graph.vertices())
-    self.descendants_ = graph.transitive_closure()
-    self.ancestors_ = self.descendants_.transpose()
+    #self.descendants_ = graph.transitive_closure()
+    #self.ancestors_ = self.descendants_.transpose()
     self.children_ = graph.transitive_reduction()
     self.parents_ = self.children_.transpose()
 

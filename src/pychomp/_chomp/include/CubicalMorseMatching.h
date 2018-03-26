@@ -64,17 +64,19 @@ private:
   //   return cell 
   // Note: should the complicated formulas (which are also found in CubicalComplex.h not be repeated here?
   Integer mate_ ( Integer cell, Integer D ) const {
+    bool fringe = complex_ -> rightfringe(cell);
+    Integer mincoords = complex_ -> mincoords(cell); // TODO: optimize to compute this as it loops through d rather than demanding all
+    Integer maxcoords = complex_ -> maxcoords(cell); // TODO: optimize to compute this as it loops through d rather than demanding all
+
     Integer shape = complex_ -> cell_shape(cell);
-    Integer type = complex_ -> TS() [ shape ];
+    Integer position = cell % complex_ -> type_size();
     for ( Integer d = 0, bit = 1; d < D; ++ d, bit <<= 1L  ) {
-      if ( shape & bit ) { // if x has extent in dimension d
-        Integer left_bd = cell + complex_ -> type_size() * ( complex_ -> TS() [ shape ^ bit ] - type );
-        if ( fibration_ -> value(left_bd) == fibration_ -> value(cell) && left_bd == mate_(left_bd, d) ) 
-          return left_bd;
-      } else { // if x does not have extent in dimension d
-        Integer right_cbd = cell + complex_ -> type_size() * ( complex_ -> TS() [ shape ^ bit ] - type );
-        if ( fibration_ -> value(right_cbd) == fibration_ -> value(cell) && right_cbd == mate_(right_cbd, d) ) 
-          return right_cbd;    
+      if ( fringe && (mincoords & bit) ) continue; // Todo -- is this the best
+      if ( bit & maxcoords ) continue; // Don't connect fringe to acyclic part
+      Integer type_offset = complex_ -> type_size() * complex_ -> TS() [ shape ^ bit ];
+      Integer proposed_mate = position + type_offset;
+      if ( fibration_ -> value(proposed_mate) == fibration_ -> value(cell) && proposed_mate == mate_(proposed_mate, d) ) { 
+        return proposed_mate;
       }
     }
     return cell;
