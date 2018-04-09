@@ -63,16 +63,21 @@ private:
   //         return right
   //   return cell 
   // Note: should the complicated formulas (which are also found in CubicalComplex.h not be repeated here?
+  // Note: the reason for the "fringe" check preventing mating is that otherwise it is possible to 
+  //       end up with a cycle 
+  // TODO: Furnish a proof of correctness and complexity that this cannot produce cycles.
   Integer mate_ ( Integer cell, Integer D ) const {
-    bool fringe = complex_ -> rightfringe(cell);
-    Integer mincoords = complex_ -> mincoords(cell); // TODO: optimize to compute this as it loops through d rather than demanding all
-    Integer maxcoords = complex_ -> maxcoords(cell); // TODO: optimize to compute this as it loops through d rather than demanding all
-
+    //bool fringe = complex_ -> rightfringe(cell);
+    //Integer mincoords = complex_ -> mincoords(cell); // TODO: optimize to compute this as it loops through d rather than demanding all
+    //Integer maxcoords = complex_ -> maxcoords(cell); // TODO: optimize to compute this as it loops through d rather than demanding all
     Integer shape = complex_ -> cell_shape(cell);
     Integer position = cell % complex_ -> type_size();
+    if ( position == complex_ -> type_size() - 1 ) return cell; // Break cycles
     for ( Integer d = 0, bit = 1; d < D; ++ d, bit <<= 1L  ) {
-      if ( fringe && (mincoords & bit) ) continue; // Todo -- is this the best
-      if ( bit & maxcoords ) continue; // Don't connect fringe to acyclic part
+      // If on right fringe for last dimension, prevent mating with left boundary
+      if ( (d == D-1) && (position + complex_ -> PV()[d] >= complex_ -> type_size()) ) break;
+      //if ( fringe && (mincoords & bit) ) continue; // Todo -- is this the best
+      //if ( bit & maxcoords ) continue; // Don't connect fringe to acyclic part
       Integer type_offset = complex_ -> type_size() * complex_ -> TS() [ shape ^ bit ];
       Integer proposed_mate = position + type_offset;
       if ( fibration_ -> value(proposed_mate) == fibration_ -> value(cell) && proposed_mate == mate_(proposed_mate, d) ) { 

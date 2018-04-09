@@ -11,6 +11,9 @@
 #include "Chain.h"
 #include "Complex.h"
 
+// TODO:
+//  get rid of interfaces like boxes()[d] in favor of boxes(d)
+
 /// CubicalComplex
 ///   Implements a trivial cubical complex with Z_2 coefficients
 ///   Methods:
@@ -406,13 +409,14 @@ public:
     return shape_from_type_;
   }
 
-private:
-
-
+  /// PV
+  ///   Return 
   std::vector<Integer> const&
   PV ( void ) const {
     return place_values_;
   }
+
+private:
 
   Integer
   popcount_ ( Integer x ) const {

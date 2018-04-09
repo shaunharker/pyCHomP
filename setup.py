@@ -80,5 +80,5 @@ setup(
     zip_safe=False,
     url = 'https://github.com/shaunharker/pyCHomP',
     download_url = 'https://github.com/shaunharker/pyCHomP/archive/v0.4.tar.gz',
-    install_requires=['scipy', 'matplotlib', 'numpy', 'graphviz']
+    install_requires=['scipy', 'matplotlib', 'numpy', 'graphviz', 'sqlite3']
 )
