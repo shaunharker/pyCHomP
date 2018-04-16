@@ -341,6 +341,12 @@ public:
     return shape;
   }
 
+  /// cell_pos
+  Integer
+  cell_pos ( Integer cell ) const {
+    return cell % type_size();
+  }
+
   /// cell_index
   Integer
   cell_index ( std::vector<Integer> const& coordinates, 
@@ -468,6 +474,7 @@ CubicalComplexBinding(py::module &m) {
     .def("barycenter", &CubicalComplex::barycenter)    
     .def("cell_type", &CubicalComplex::cell_type)
     .def("cell_shape", &CubicalComplex::cell_shape)
+    .def("cell_pos", &CubicalComplex::cell_pos)
     .def("cell_dim", &CubicalComplex::cell_dim)
     .def("cell_index", &CubicalComplex::cell_index)
     .def("left", &CubicalComplex::left)
