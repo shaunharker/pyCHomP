@@ -16,11 +16,18 @@
 
 class MorseMatching {
 public:
+  typedef std::vector<Integer> BeginType; // To store location of first cell of each dim
+  typedef std::vector<std::pair<Integer,Integer>> ReindexType; // To convert indexing
+
   /// mate
   virtual Integer mate ( Integer x ) const = 0;
 
   /// priority
   virtual Integer priority ( Integer x ) const = 0;
+
+  /// critical_cells
+  virtual std::pair<BeginType const&,ReindexType const&>
+  critical_cells ( void ) const = 0;
 
   /// compute_matching
   static

@@ -105,6 +105,32 @@ public:
         process(A);
       }
     }
+
+    // Compute critical cells
+    Integer D = complex.dimension();
+    //std::cout << "  Dimension = " << dim_ << "\n";
+    begin_.resize(D+2);
+    Integer idx = 0;
+    for ( Integer d = 0; d <= D; ++ d ) {
+      begin_[d] = idx;
+      //std::cout << "  begin_[" << d << "] = " << *begin_[d] << "\n";
+      for ( auto v : complex(d) ) {
+        //std::cout << "  Inspecting cell " << v << " with mate " << matching_ -> mate(v) << "\n";
+        if ( mate(v) == v ) { 
+          //std::cout << "  Identified cell " << idx << "\n";
+          reindex_.push_back({v, idx});
+          ++idx;
+        }
+      }
+    }
+    begin_[D+1] = idx;
+
+  }
+
+  /// critical_cells
+  std::pair<BeginType const&,ReindexType const&>
+  critical_cells ( void ) const {
+    return {begin_,reindex_};
   }
 
   /// mate
@@ -122,6 +148,8 @@ public:
 private:
   std::vector<Integer> mate_;
   std::vector<Integer> priority_;
+  BeginType begin_;
+  ReindexType reindex_;
 };
 
 /// Python Bindings

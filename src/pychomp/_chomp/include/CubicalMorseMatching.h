@@ -30,6 +30,27 @@ public:
       throw std::invalid_argument("CubicalMorseMatching must be constructed with a Cubical Complex");
     }
     type_size_ = complex_ -> type_size();
+    Integer D = complex_ -> dimension();
+    Integer idx = 0;
+    begin_.resize(D+2);
+    for ( Integer d = 0; d <= D; ++ d) {
+      begin_[d] = idx;
+      for ( auto v : (*complex_)(d) ) { // TODO: skip fringe cells
+        if ( ! complex_ -> rightfringe(v) ) {
+          if ( mate(v) == v ) { 
+            reindex_.push_back({v,idx});
+            ++idx;
+          }
+        }
+      }
+    }
+    begin_[D+1] = idx;
+  }
+
+  /// critical_cells
+  std::pair<BeginType const&,ReindexType const&>
+  critical_cells ( void ) const {
+    return {begin_,reindex_};
   }
 
   /// mate
@@ -41,13 +62,15 @@ public:
   /// priority
   Integer
   priority ( Integer x ) const { 
-    return x % type_size_;
+    return type_size_ - x % type_size_;
   }
 
 private:
   uint64_t type_size_;
   std::shared_ptr<Fibration> fibration_;
   std::shared_ptr<CubicalComplex> complex_;
+  BeginType begin_;
+  ReindexType reindex_;
 
   // def mate(cell, D):
   // for d in range(0, D):
@@ -68,6 +91,7 @@ private:
   // TODO: Furnish a proof of correctness and complexity that this cannot produce cycles.
   Integer mate_ ( Integer cell, Integer D ) const {
     //bool fringe = complex_ -> rightfringe(cell);
+    if ( complex_ -> rightfringe(cell) ) return cell; // MAYBE
     //Integer mincoords = complex_ -> mincoords(cell); // TODO: optimize to compute this as it loops through d rather than demanding all
     //Integer maxcoords = complex_ -> maxcoords(cell); // TODO: optimize to compute this as it loops through d rather than demanding all
     Integer shape = complex_ -> cell_shape(cell);

@@ -25,29 +25,19 @@ public:
   MorseComplex ( std::shared_ptr<Complex> arg_base, 
                  std::shared_ptr<MorseMatching> arg_matching ) 
                : base_(arg_base), matching_(arg_matching) {
-    //std::cout << "MorseComplex constructor\n";
-    dim_ = base()->dimension();
-    //std::cout << "  Dimension = " << dim_ << "\n";
-    std::vector<std::pair<Integer,Integer>> critical;
-    begin_.resize(dim_+2);
-    Integer idx = 0;
-    for ( Integer d = 0; d <= dim_; ++ d ) {
-      begin_[d] = Iterator(idx);
-      //std::cout << "  begin_[" << d << "] = " << *begin_[d] << "\n";
-      for ( auto v : (*base())(d) ) {
-        //std::cout << "  Inspecting cell " << v << " with mate " << matching_ -> mate(v) << "\n";
-        if ( matching_ -> mate(v) == v ) { 
-          //std::cout << "  Identified cell " << idx << "\n";
-          critical.push_back({v, idx});
-          ++idx;
-          include_.push_back(v);
-        }
-      }
-    }
-    begin_[dim_+1] = idx;
-    //std::cout << "  Total number of cells: " << idx << "\n";
 
-    project_ = std::unordered_map<Integer, Integer>(critical.begin(), critical.end());
+    auto begin_reindex = matching_ -> critical_cells();
+    begin_.clear();
+    for ( auto i : begin_reindex.first ) {
+      begin_.push_back(Iterator(i));
+    }
+    dim_ = begin_.size()-2;
+    auto const& reindex = begin_reindex.second;
+
+    for ( auto pair : reindex ) {
+      include_.push_back(pair.first);
+    }
+    project_ = std::unordered_map<Integer, Integer>(reindex.begin(), reindex.end());
 
     // boundary
     bd_.resize(size());
@@ -160,26 +150,16 @@ public:
   /// flow
   std::pair<Chain, Chain>
   flow ( Chain const& input ) const {
-    //std::cout << "MorseComplex::flow\n";
+    // std::cout << "MorseComplex::flow\n";
     Chain canonical, gamma;
-    std::unordered_set<Integer> queens;
+    //std::unordered_set<Integer> queens;
     auto compare = [&](Integer x, Integer y){return matching_ -> priority(x) < matching_ -> priority(y);};
     std::priority_queue<Integer, std::vector<Integer>, decltype(compare)> priority ( compare );
     auto isQueen = [&](Integer x){ return x < matching_ -> mate(x); };
 
-    // auto process = [&](Chain const& c ) {
-    //   for ( auto x : c ) {
-    //     if ( isQueen(x) && queens.count(x) == 0) {
-    //       queens . insert (x);
-    //       priority . push (x);
-    //     }
-    //   }
-    //   canonical += c;
-    // };
-
     auto process = [&](Integer x) {
-      if ( isQueen(x) && queens.count(x) == 0) {
-        queens . insert (x);
+      if ( isQueen(x) ) { //&& queens.count(x) == 0) {
+        //queens . insert (x);
         priority . push (x);
       }
       canonical += x;
@@ -188,19 +168,19 @@ public:
     for ( auto x : input ) process(x);
 
     while ( not priority . empty () ) {
-      //std::cout << "  Current chain = " << canonical << "\n";
+      // std::cout << "  Current chain = " << canonical << "\n";
       auto queen = priority.top(); priority.pop();
       if ( canonical . count ( queen ) == 0 ) continue;
       auto king = matching_ -> mate ( queen );
       gamma += king;
-      //std::cout << "    Reducing queen " << queen << " with king " << king << " and priority " << matching_->priority(queen) << "\n";
-      //std::cout << "       The boundary of king is " << base()->boundary({king})<<"\n";
+      // std::cout << "    Reducing queen " << queen << " with king " << king << " and priority " << matching_->priority(queen) << "\n";
+      // std::cout << "       The boundary of king is " << base()->boundary({king})<<"\n";
       base() -> column(king, process);
       //process( base()->boundary({king}) );
     }
-    //std::cout << "  COMPLETE chain = " << canonical << "\n";
+    // std::cout << "  COMPLETE chain = " << canonical << "\n";
 
-    return {canonical, gamma}; // TODO -- prevent copy? or optimizer already does?
+    return {canonical, gamma};
   }
 
 private:
