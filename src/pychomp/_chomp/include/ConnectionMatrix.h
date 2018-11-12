@@ -12,32 +12,32 @@
 #include "Complex.h"
 #include "MorseComplex.h"
 #include "MorseMatching.h"
-#include "Fibration.h"
-#include "MorseFibration.h"
+#include "GradedComplex.h"
+#include "MorseGradedComplex.h"
 
 /// ConnectionMatrix
 inline
-std::shared_ptr<Fibration> 
-ConnectionMatrix ( std::shared_ptr<Fibration> base ) {
-  std::shared_ptr<Fibration> next = base;
+std::shared_ptr<GradedComplex> 
+ConnectionMatrix ( std::shared_ptr<GradedComplex> base ) {
+  std::shared_ptr<GradedComplex> next = base;
   do {
     base = next;
-    next = MorseFibration(base);
+    next = MorseGradedComplex(base);
   } while ( next -> complex() -> size() != base -> complex() -> size() );
   return base;
 }
 
 /// ConnectionMatrix
 inline
-std::vector<std::shared_ptr<Fibration>>
-ConnectionMatrixTower ( std::shared_ptr<Fibration> base ) {
-  std::vector<std::shared_ptr<Fibration>> tower;
-  std::shared_ptr<Fibration> next = base;
-  std::shared_ptr<Fibration> last;
+std::vector<std::shared_ptr<GradedComplex>>
+ConnectionMatrixTower ( std::shared_ptr<GradedComplex> base ) {
+  std::vector<std::shared_ptr<GradedComplex>> tower;
+  std::shared_ptr<GradedComplex> next = base;
+  std::shared_ptr<GradedComplex> last;
   do {
     tower.push_back(next);
     last = tower.back();
-    next = MorseFibration(last);
+    next = MorseGradedComplex(last);
   } while ( next -> complex() -> size() != last -> complex() -> size() );
   return tower;
 }

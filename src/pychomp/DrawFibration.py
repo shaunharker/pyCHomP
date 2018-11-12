@@ -1,9 +1,9 @@
-# DrawFibration.py
+# DrawGradedComplex.py
 
 from collections import Counter
 import graphviz
 
-class DrawFibration:
+class DrawGradedComplex:
     def __dir__(self):
         return list(self.__dict__.keys()) + dir(self._a)
     def __getattr__(self, attr):

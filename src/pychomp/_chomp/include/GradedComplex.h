@@ -1,4 +1,4 @@
-/// Fibration.h
+/// GradedComplex.h
 /// Shaun Harker
 /// 2017-07-20
 /// MIT LICENSE
@@ -9,10 +9,10 @@
 #include "Complex.h"
 //#include "Poset.h"
 
-class Fibration {
+class GradedComplex {
 public:
-  /// Fibration
-  Fibration ( std::shared_ptr<Complex> c, 
+  /// GradedComplex
+  GradedComplex ( std::shared_ptr<Complex> c, 
               std::function<Integer(Integer)> v ) : complex_(c), value_(v) {}
 
   /// complex
@@ -62,10 +62,10 @@ private:
 namespace py = pybind11;
 
 inline void
-FibrationBinding(py::module &m) {
-  py::class_<Fibration, std::shared_ptr<Fibration>>(m, "Fibration")
+GradedComplexBinding(py::module &m) {
+  py::class_<GradedComplex, std::shared_ptr<GradedComplex>>(m, "GradedComplex")
     .def(py::init<std::shared_ptr<Complex>,std::function<Integer(Integer)>>())
-    .def("complex", &Fibration::complex)
-    .def("value", &Fibration::value)
-    .def("count", &Fibration::count);
+    .def("complex", &GradedComplex::complex)
+    .def("value", &GradedComplex::value)
+    .def("count", &GradedComplex::count);
 }

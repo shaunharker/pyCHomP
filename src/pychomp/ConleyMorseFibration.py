@@ -1,4 +1,4 @@
-### ConleyMorseFibration.py
+### ConleyMorseGradedComplex.py
 ### MIT LICENSE 2016 Shaun Harker
 
 from pychomp._chomp import *
@@ -7,11 +7,11 @@ from pychomp.StronglyConnectedComponents import *
 from pychomp.DirectedAcyclicGraph import *
 from pychomp.Poset import *
 
-def ConleyMorseFibration(complex, discrete_flow):
+def ConleyMorseGradedComplex(complex, discrete_flow):
   """
   Overview:
     Given a complex and a graph on its top dimensional cells,
-    produce a Fibration such that the preimage of a down set
+    produce a GradedComplex such that the preimage of a down set
     is the collection of cells in the closure of all the 
     associated top cells
   Inputs:
@@ -47,6 +47,6 @@ def ConleyMorseFibration(complex, discrete_flow):
   #valuation = lambda x : min([mapping[z] for z in complex.star(x) if z >= num_nontop_cells])
 
   valuation = construct_valuation(complex, lambda x : mapping[x] );
-  return dag, Fibration(complex, valuation) # lambda x : mapping[x])
+  return dag, GradedComplex(complex, valuation) # lambda x : mapping[x])
 
-  #return poset, chompy.Fibration(complex, lambda x : mapping[x])
+  #return poset, chompy.GradedComplex(complex, lambda x : mapping[x])

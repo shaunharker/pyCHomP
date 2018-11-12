@@ -12,7 +12,7 @@
 #include "Integer.h"
 #include "Chain.h"
 #include "Complex.h"
-#include "Fibration.h"
+#include "GradedComplex.h"
 
 class MorseMatching {
 public:
@@ -37,7 +37,7 @@ public:
   /// compute_matching
   static
   std::shared_ptr<MorseMatching>
-  compute_matching ( std::shared_ptr<Fibration> fibration );
+  compute_matching ( std::shared_ptr<GradedComplex> fibration );
 };
 
 /// Python Bindings

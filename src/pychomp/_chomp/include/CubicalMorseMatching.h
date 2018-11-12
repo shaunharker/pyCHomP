@@ -12,7 +12,7 @@
 #include "Integer.h"
 #include "Chain.h"
 #include "Complex.h"
-#include "Fibration.h"
+#include "GradedComplex.h"
 #include "MorseMatching.h"
 
 class CubicalMorseMatching : public MorseMatching {
@@ -20,11 +20,11 @@ public:
   /// CubicalMorseMatching
   CubicalMorseMatching ( std::shared_ptr<CubicalComplex> complex_ptr ) : complex_(complex_ptr) {
     type_size_ = complex_ -> type_size();
-    fibration_.reset(new Fibration(complex_, [](Integer i){return 0;}));
+    fibration_.reset(new GradedComplex(complex_, [](Integer i){return 0;}));
   }
 
   /// CubicalMorseMatching
-  CubicalMorseMatching ( std::shared_ptr<Fibration> fibration_ptr ) : fibration_(fibration_ptr) {
+  CubicalMorseMatching ( std::shared_ptr<GradedComplex> fibration_ptr ) : fibration_(fibration_ptr) {
     complex_ = std::dynamic_pointer_cast<CubicalComplex>(fibration_->complex());
     if ( not complex_ ) {
       throw std::invalid_argument("CubicalMorseMatching must be constructed with a Cubical Complex");
@@ -67,7 +67,7 @@ public:
 
 private:
   uint64_t type_size_;
-  std::shared_ptr<Fibration> fibration_;
+  std::shared_ptr<GradedComplex> fibration_;
   std::shared_ptr<CubicalComplex> complex_;
   BeginType begin_;
   ReindexType reindex_;
@@ -122,7 +122,7 @@ inline void
 CubicalMorseMatchingBinding(py::module &m) {
   py::class_<CubicalMorseMatching, std::shared_ptr<CubicalMorseMatching>>(m, "CubicalMorseMatching")
     .def(py::init<std::shared_ptr<CubicalComplex>>())
-    .def(py::init<std::shared_ptr<Fibration>>())    
+    .def(py::init<std::shared_ptr<GradedComplex>>())    
     .def("mate", &CubicalMorseMatching::mate)
     .def("priority", &CubicalMorseMatching::priority);
 }

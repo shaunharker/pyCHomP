@@ -12,27 +12,27 @@
 #include "Integer.h"
 #include "Chain.h"
 #include "Complex.h"
-#include "Fibration.h"
+#include "GradedComplex.h"
 #include "MorseMatching.h"
 
 class GenericMorseMatching : public MorseMatching {
 public:
   /// GenericMorseMatching
   GenericMorseMatching ( std::shared_ptr<Complex> complex_ptr ) {
-    std::shared_ptr<Fibration> fibration_ptr (new Fibration(complex_ptr, [](Integer i){return 0;}));
+    std::shared_ptr<GradedComplex> fibration_ptr (new GradedComplex(complex_ptr, [](Integer i){return 0;}));
     construct(fibration_ptr);
   }
 
   /// GenericMorseMatching
   // DRY mistake -- only a few lines differ. 
-  GenericMorseMatching ( std::shared_ptr<Fibration> fibration_ptr ) {
+  GenericMorseMatching ( std::shared_ptr<GradedComplex> fibration_ptr ) {
     construct(fibration_ptr);
   }
 
   /// construct
   void
-  construct ( std::shared_ptr<Fibration> fibration_ptr ) {
-    Fibration const& fibration = *fibration_ptr;
+  construct ( std::shared_ptr<GradedComplex> fibration_ptr ) {
+    GradedComplex const& fibration = *fibration_ptr;
     Complex const& complex = *fibration.complex();
     Integer N = complex.size();
     mate_.resize(N,-1);
@@ -162,7 +162,7 @@ inline void
 GenericMorseMatchingBinding(py::module &m) {
   py::class_<GenericMorseMatching, std::shared_ptr<GenericMorseMatching>>(m, "GenericMorseMatching")
     .def(py::init<std::shared_ptr<Complex>>())
-    .def(py::init<std::shared_ptr<Fibration>>())    
+    .def(py::init<std::shared_ptr<GradedComplex>>())    
     .def("mate", &GenericMorseMatching::mate)
     .def("priority", &GenericMorseMatching::priority);
 }

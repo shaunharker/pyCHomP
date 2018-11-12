@@ -1,4 +1,4 @@
-/// MorseFibration.h
+/// MorseGradedComplex.h
 /// Shaun Harker
 /// 2017-07-20
 /// MIT LICENSE
@@ -13,12 +13,12 @@
 #include "Complex.h"
 #include "MorseComplex.h"
 #include "MorseMatching.h"
-#include "Fibration.h"
+#include "GradedComplex.h"
 
-/// MorseFibration
+/// MorseGradedComplex
 inline
-std::shared_ptr<Fibration> 
-MorseFibration ( std::shared_ptr<Fibration> base_fibration, 
+std::shared_ptr<GradedComplex> 
+MorseGradedComplex ( std::shared_ptr<GradedComplex> base_fibration, 
                  std::shared_ptr<MorseMatching> matching ) {
 
   std::shared_ptr<MorseComplex> complex ( new MorseComplex(base_fibration -> complex(), matching) );
@@ -30,15 +30,15 @@ MorseFibration ( std::shared_ptr<Fibration> base_fibration,
     fibration_mapping[x]= base_fibration -> value(*included.begin());
   }
 
-  return std::shared_ptr<Fibration>( new Fibration(complex, [=](Integer x){return fibration_mapping[x];}));
+  return std::shared_ptr<GradedComplex>( new GradedComplex(complex, [=](Integer x){return fibration_mapping[x];}));
 }
 
-/// MorseFibration
+/// MorseGradedComplex
 inline
-std::shared_ptr<Fibration> 
-MorseFibration ( std::shared_ptr<Fibration> base_fibration ) {
+std::shared_ptr<GradedComplex> 
+MorseGradedComplex ( std::shared_ptr<GradedComplex> base_fibration ) {
   std::shared_ptr<MorseMatching> matching ( MorseMatching::compute_matching(base_fibration) );
-  return MorseFibration (base_fibration, matching);
+  return MorseGradedComplex (base_fibration, matching);
 }
 
 /// Python Bindings
@@ -48,7 +48,7 @@ MorseFibration ( std::shared_ptr<Fibration> base_fibration ) {
 namespace py = pybind11;
 
 inline
-void MorseFibrationBinding(py::module &m) {
-  m.def("MorseFibration", (std::shared_ptr<Fibration>(*)(std::shared_ptr<Fibration>,std::shared_ptr<MorseMatching>))&MorseFibration);
-  m.def("MorseFibration", (std::shared_ptr<Fibration>(*)(std::shared_ptr<Fibration>))&MorseFibration);
+void MorseGradedComplexBinding(py::module &m) {
+  m.def("MorseGradedComplex", (std::shared_ptr<GradedComplex>(*)(std::shared_ptr<GradedComplex>,std::shared_ptr<MorseMatching>))&MorseGradedComplex);
+  m.def("MorseGradedComplex", (std::shared_ptr<GradedComplex>(*)(std::shared_ptr<GradedComplex>))&MorseGradedComplex);
 }
