@@ -19,7 +19,7 @@
 inline
 std::shared_ptr<GradedComplex> 
 MorseGradedComplex ( std::shared_ptr<GradedComplex> base_graded_complex, 
-                 std::shared_ptr<MorseMatching> matching ) {
+                     std::shared_ptr<MorseMatching> matching ) {
 
   std::shared_ptr<MorseComplex> complex ( new MorseComplex(base_graded_complex -> complex(), matching) );
 

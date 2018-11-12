@@ -46,7 +46,7 @@ def FlowGradedComplex(complex, discrete_flow):
 
   #valuation = lambda x : min([mapping[z] for z in complex.star(x) if z >= num_nontop_cells])
 
-  valuation = construct_grading(complex, lambda x : mapping[x] );
-  return dag, GradedComplex(complex, valuation) # lambda x : mapping[x])
+  grading = construct_grading(complex, lambda x : mapping[x] );
+  return dag, GradedComplex(complex, grading) # lambda x : mapping[x])
 
   #return poset, chompy.GradedComplex(complex, lambda x : mapping[x])
