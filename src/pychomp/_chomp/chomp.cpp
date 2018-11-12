@@ -14,10 +14,10 @@
 #include "CubicalMorseMatching.h"
 #include "GenericMorseMatching.h"
 #include "Homology.h"
-#include "Fibration.h"
-#include "MorseFibration.h"
+#include "GradedComplex.h"
+#include "MorseGradedComplex.h"
 #include "ConnectionMatrix.h"
-#include "Valuation.h"
+#include "Grading.h"
 #include "SimplicialComplex.h"
 #include "OrderComplex.h"
 #include "DualComplex.h"
@@ -34,10 +34,10 @@ PYBIND11_MODULE( _chomp, m) {
   GenericMorseMatchingBinding(m);
   MorseComplexBinding(m);
   HomologyBinding(m);
-  FibrationBinding(m);
-  MorseFibrationBinding(m);
+  GradedComplexBinding(m);
+  MorseGradedComplexBinding(m);
   ConnectionMatrixBinding(m);
-  ValuationBinding(m);
+  GradingBinding(m);
   SimplicialComplexBinding(m);
   OrderComplexBinding(m);
   DualComplexBinding(m);

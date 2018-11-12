@@ -9,7 +9,7 @@
 
 std::function<Integer(Integer)>
 construct_grading ( std::shared_ptr<Complex> c, 
-                      std::function<Integer(Integer)> top_cell_valuation ) {
+                    std::function<Integer(Integer)> top_cell_valuation ) {
   // Copy top_cell_valuation (with offset)
   std::vector<Integer> top_cell_valuation_;
   top_cell_valuation_.resize(c->size(c->dimension()));
@@ -54,6 +54,6 @@ construct_grading ( std::shared_ptr<Complex> c,
 namespace py = pybind11;
 
 inline void
-ValuationBinding(py::module &m) {
+GradingBinding(py::module &m) {
   m.def("construct_grading", &construct_grading);
 }
