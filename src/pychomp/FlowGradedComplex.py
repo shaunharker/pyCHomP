@@ -1,4 +1,4 @@
-### ConleyMorseGradedComplex.py
+### FlowGradedComplex.py
 ### MIT LICENSE 2016 Shaun Harker
 
 from pychomp._chomp import *
@@ -7,7 +7,7 @@ from pychomp.StronglyConnectedComponents import *
 from pychomp.DirectedAcyclicGraph import *
 from pychomp.Poset import *
 
-def ConleyMorseGradedComplex(complex, discrete_flow):
+def FlowGradedComplex(complex, discrete_flow):
   """
   Overview:
     Given a complex and a graph on its top dimensional cells,
@@ -46,7 +46,7 @@ def ConleyMorseGradedComplex(complex, discrete_flow):
 
   #valuation = lambda x : min([mapping[z] for z in complex.star(x) if z >= num_nontop_cells])
 
-  valuation = construct_valuation(complex, lambda x : mapping[x] );
+  valuation = construct_grading(complex, lambda x : mapping[x] );
   return dag, GradedComplex(complex, valuation) # lambda x : mapping[x])
 
   #return poset, chompy.GradedComplex(complex, lambda x : mapping[x])

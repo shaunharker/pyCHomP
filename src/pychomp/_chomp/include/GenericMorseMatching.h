@@ -19,21 +19,21 @@ class GenericMorseMatching : public MorseMatching {
 public:
   /// GenericMorseMatching
   GenericMorseMatching ( std::shared_ptr<Complex> complex_ptr ) {
-    std::shared_ptr<GradedComplex> fibration_ptr (new GradedComplex(complex_ptr, [](Integer i){return 0;}));
-    construct(fibration_ptr);
+    std::shared_ptr<GradedComplex> graded_complex_ptr (new GradedComplex(complex_ptr, [](Integer i){return 0;}));
+    construct(graded_complex_ptr);
   }
 
   /// GenericMorseMatching
   // DRY mistake -- only a few lines differ. 
-  GenericMorseMatching ( std::shared_ptr<GradedComplex> fibration_ptr ) {
-    construct(fibration_ptr);
+  GenericMorseMatching ( std::shared_ptr<GradedComplex> graded_complex_ptr ) {
+    construct(graded_complex_ptr);
   }
 
   /// construct
   void
-  construct ( std::shared_ptr<GradedComplex> fibration_ptr ) {
-    GradedComplex const& fibration = *fibration_ptr;
-    Complex const& complex = *fibration.complex();
+  construct ( std::shared_ptr<GradedComplex> graded_complex_ptr ) {
+    GradedComplex const& graded_complex = *graded_complex_ptr;
+    Complex const& complex = *graded_complex.complex();
     Integer N = complex.size();
     mate_.resize(N,-1);
     priority_.resize(N);
@@ -44,11 +44,11 @@ public:
 
     auto bd = [&](Integer x) {
       Chain result;
-      auto x_val = fibration.value(x);
+      auto x_val = graded_complex.value(x);
       for ( auto y : complex.boundary({x}) ) {
-        auto y_val = fibration.value(y);
+        auto y_val = graded_complex.value(y);
         if ( y_val > x_val ) {
-          throw std::logic_error("fibration closure property failed line MorseMatching line 98");
+          throw std::logic_error("graded_complex closure property failed line MorseMatching line 98");
         }
         if ( x_val == y_val ) result += y;
       }
@@ -57,9 +57,9 @@ public:
 
     auto cbd = [&](Integer x) {
       Chain result;
-      auto x_val = fibration.value(x);
+      auto x_val = graded_complex.value(x);
       for ( auto y : complex.coboundary({x}) ) {
-        if ( x_val == fibration.value(y) ) result += y;
+        if ( x_val == graded_complex.value(y) ) result += y;
       }
       return result;
     };
@@ -73,7 +73,7 @@ public:
     }
 
     auto process = [&](Integer y){
-      priority_[y] = fibration.value(y)*complex.size() + num_processed ++;
+      priority_[y] = graded_complex.value(y)*complex.size() + num_processed ++;
       coreducible.erase(y);
       ace_candidates.erase(y);
       for ( auto x : cbd(y) ) {
@@ -92,8 +92,8 @@ public:
         auto it = coreducible.begin(); K = *it; coreducible.erase(it); // pop from unordered_set
         // Find mate Q
         for ( auto x : bd(K) ) if ( mate_[x] == -1 ) { Q = x; break; }
-        if ( fibration.value(K) != fibration.value(Q) ) {
-          throw std::logic_error("fibration error -- memory bug? MorseMatching line 132");
+        if ( graded_complex.value(K) != graded_complex.value(Q) ) {
+          throw std::logic_error("graded_complex error -- memory bug? MorseMatching line 132");
         }
         mate_[K] = Q; mate_[Q] = K;
         process(Q); process(K);

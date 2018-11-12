@@ -8,7 +8,7 @@
 #include "common.h"
 
 std::function<Integer(Integer)>
-construct_valuation ( std::shared_ptr<Complex> c, 
+construct_grading ( std::shared_ptr<Complex> c, 
                       std::function<Integer(Integer)> top_cell_valuation ) {
   // Copy top_cell_valuation (with offset)
   std::vector<Integer> top_cell_valuation_;
@@ -55,5 +55,5 @@ namespace py = pybind11;
 
 inline void
 ValuationBinding(py::module &m) {
-  m.def("construct_valuation", &construct_valuation);
+  m.def("construct_grading", &construct_grading);
 }

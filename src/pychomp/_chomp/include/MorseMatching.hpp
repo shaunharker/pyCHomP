@@ -19,10 +19,10 @@ MorseMatching::compute_matching ( std::shared_ptr<Complex> complex ) {
 
 inline
 std::shared_ptr<MorseMatching>
-MorseMatching::compute_matching ( std::shared_ptr<GradedComplex> fibration ) {
-  if ( std::dynamic_pointer_cast<CubicalComplex>(fibration->complex()) ) {
-    return std::make_shared<CubicalMorseMatching>(fibration);
+MorseMatching::compute_matching ( std::shared_ptr<GradedComplex> graded_complex ) {
+  if ( std::dynamic_pointer_cast<CubicalComplex>(graded_complex->complex()) ) {
+    return std::make_shared<CubicalMorseMatching>(graded_complex);
   } else {
-    return std::make_shared<GenericMorseMatching>(fibration);
+    return std::make_shared<GenericMorseMatching>(graded_complex);
   }
 }

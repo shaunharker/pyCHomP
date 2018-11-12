@@ -20,12 +20,12 @@ public:
   /// CubicalMorseMatching
   CubicalMorseMatching ( std::shared_ptr<CubicalComplex> complex_ptr ) : complex_(complex_ptr) {
     type_size_ = complex_ -> type_size();
-    fibration_.reset(new GradedComplex(complex_, [](Integer i){return 0;}));
+    graded_complex_.reset(new GradedComplex(complex_, [](Integer i){return 0;}));
   }
 
   /// CubicalMorseMatching
-  CubicalMorseMatching ( std::shared_ptr<GradedComplex> fibration_ptr ) : fibration_(fibration_ptr) {
-    complex_ = std::dynamic_pointer_cast<CubicalComplex>(fibration_->complex());
+  CubicalMorseMatching ( std::shared_ptr<GradedComplex> graded_complex_ptr ) : graded_complex_(graded_complex_ptr) {
+    complex_ = std::dynamic_pointer_cast<CubicalComplex>(graded_complex_->complex());
     if ( not complex_ ) {
       throw std::invalid_argument("CubicalMorseMatching must be constructed with a Cubical Complex");
     }
@@ -67,7 +67,7 @@ public:
 
 private:
   uint64_t type_size_;
-  std::shared_ptr<GradedComplex> fibration_;
+  std::shared_ptr<GradedComplex> graded_complex_;
   std::shared_ptr<CubicalComplex> complex_;
   BeginType begin_;
   ReindexType reindex_;
@@ -104,7 +104,7 @@ private:
       //if ( bit & maxcoords ) continue; // Don't connect fringe to acyclic part
       Integer type_offset = complex_ -> type_size() * complex_ -> TS() [ shape ^ bit ];
       Integer proposed_mate = position + type_offset;
-      if ( fibration_ -> value(proposed_mate) == fibration_ -> value(cell) && proposed_mate == mate_(proposed_mate, d) ) { 
+      if ( graded_complex_ -> value(proposed_mate) == graded_complex_ -> value(cell) && proposed_mate == mate_(proposed_mate, d) ) { 
         return proposed_mate;
       }
     }

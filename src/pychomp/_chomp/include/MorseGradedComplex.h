@@ -18,27 +18,27 @@
 /// MorseGradedComplex
 inline
 std::shared_ptr<GradedComplex> 
-MorseGradedComplex ( std::shared_ptr<GradedComplex> base_fibration, 
+MorseGradedComplex ( std::shared_ptr<GradedComplex> base_graded_complex, 
                  std::shared_ptr<MorseMatching> matching ) {
 
-  std::shared_ptr<MorseComplex> complex ( new MorseComplex(base_fibration -> complex(), matching) );
+  std::shared_ptr<MorseComplex> complex ( new MorseComplex(base_graded_complex -> complex(), matching) );
 
-  // Convert indices of cells to compute new fibration mapping (map from cell index to poset vertex number)
-  std::vector<Integer> fibration_mapping(complex -> size());
+  // Convert indices of cells to compute new graded_complex mapping (map from cell index to poset vertex number)
+  std::vector<Integer> graded_complex_mapping(complex -> size());
   for ( auto x : *complex ) {
     Chain included = complex -> include ({x});
-    fibration_mapping[x]= base_fibration -> value(*included.begin());
+    graded_complex_mapping[x]= base_graded_complex -> value(*included.begin());
   }
 
-  return std::shared_ptr<GradedComplex>( new GradedComplex(complex, [=](Integer x){return fibration_mapping[x];}));
+  return std::shared_ptr<GradedComplex>( new GradedComplex(complex, [=](Integer x){return graded_complex_mapping[x];}));
 }
 
 /// MorseGradedComplex
 inline
 std::shared_ptr<GradedComplex> 
-MorseGradedComplex ( std::shared_ptr<GradedComplex> base_fibration ) {
-  std::shared_ptr<MorseMatching> matching ( MorseMatching::compute_matching(base_fibration) );
-  return MorseGradedComplex (base_fibration, matching);
+MorseGradedComplex ( std::shared_ptr<GradedComplex> base_graded_complex ) {
+  std::shared_ptr<MorseMatching> matching ( MorseMatching::compute_matching(base_graded_complex) );
+  return MorseGradedComplex (base_graded_complex, matching);
 }
 
 /// Python Bindings

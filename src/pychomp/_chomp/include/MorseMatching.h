@@ -37,7 +37,7 @@ public:
   /// compute_matching
   static
   std::shared_ptr<MorseMatching>
-  compute_matching ( std::shared_ptr<GradedComplex> fibration );
+  compute_matching ( std::shared_ptr<GradedComplex> graded_complex );
 };
 
 /// Python Bindings
