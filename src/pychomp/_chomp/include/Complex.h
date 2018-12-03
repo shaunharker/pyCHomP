@@ -89,13 +89,17 @@ public:
   ///   Apply "callback" method to every element in ith column of
   ///   boundary matrix
   virtual void
-  column ( Integer i, std::function<void(Integer)> const& callback) const {};
+  column ( Integer i, std::function<void(Integer)> const& callback) const {
+    // TODO: call boundary, so inherited class may override whichever they choose
+  };
 
   /// row
   ///   Apply "callback" method to every element in ith row of
   ///   boundary matrix
   virtual void
-  row ( Integer i, std::function<void(Integer)> const& callback) const {};
+  row ( Integer i, std::function<void(Integer)> const& callback) const {
+    // TODO: call boundary, so inherited class may override whichever they choose
+  };
   
   /// dimension
   Integer 
