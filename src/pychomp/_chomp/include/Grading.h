@@ -1,4 +1,4 @@
-/// Valuation.h
+/// Grading.h
 /// Shaun Harker
 /// 2018-03-09
 /// MIT LICENSE
@@ -9,7 +9,7 @@
 
 std::function<Integer(Integer)>
 construct_grading ( std::shared_ptr<Complex> c, 
-                    std::function<Integer(Integer)> top_cell_grading ) {
+                    std::function<Integer(Integer)> top_cell_grading ) { // top_cell_valuation
   // Copy top_cell_grading (with offset)
   std::vector<Integer> top_cell_grading_;
   top_cell_grading_.resize(c->size(c->dimension()));

@@ -23,6 +23,92 @@ public:
     graded_complex_.reset(new GradedComplex(complex_, [](Integer i){return 0;}));
   }
 
+  /// idea 1. Pass an an argument to the constructor of CubicalMorseMatching
+  ///         that abstracts the parallelism capability
+  /// idea 2. Make a new constructor that glues together results for partial objects
+  ///  conj. the induced matching on the subdivided graded complexes are the subdivided induced matchings
+  ///       * we can subdivide in a way that respects the implicit matching
+  ///   * A "left-closed" subcomplex  *-----*------
+  ///   * how to define the grading on left-closed subcomplexes?
+  ///   (1) for a complex with values on top cells, we can induce a grading.
+  ///   problem. If we take a left-closed subcomplex, we will induce a different grading using the top cells
+  ///            in the subcomplex.
+  ///   So we need extra information so the induced grading on a LC-subcomplex
+  ///   Another problem: the twisted periodicity implementation could result in strange behaviors.
+  ///    Two birds with one stone: can we fix the twisted periodicity problem with fringe and put values on that
+  ///    fringe to make the values on the left-fringe correct?
+  /// (A) top-cell valuations induce cell gradations
+  /// Types:
+  ///   CubicalComplex  --- this is really a cubical complex with twisted periodicity.
+  ///   CubicalMorseMatching
+  ///   GradedComplex
+  ///   We don't have: GradedCubicalComplex
+  ///                  GradedCubicalComplexWhereGradingIsInducedFromTopCellValuation
+  ///                  CubicalComplexWithTopCellValuation
+  ///                  CubicalComplexWithTopCellValuationAndFringeData
+  ///   we have: construct a grading from a top-cell valuation on complex
+  ///   we need: construct a grading on a left-closed subcomplex given a top-cell valuation on complex
+  ///            idea. implement the left-closed subcomplex with a cubicalcomplex with a wrapper
+  ///                  compute a top-cell valuation on the underlying-implementation-complex
+  ///                  compute a grading on the underlying-implementation-complex with this top-cell valuation
+  ///                  give a view to the 
+  /// ...
+  ///   Start with a CubicalComplex with a top cell valuation
+  ///   Take a subcomplex out of it with a left-wrapper, and also a sub top-cell valuation correspond to it
+  ///   Now induce a grading on the subcomplex.
+  ///   Now take a sub-gradedcomplex by removing left-wrapper.
+  /// Plan. 1. Refactor CubicalComplex so that twisted periodicity is an implementation detail
+  ///          (Say, by making a TwistedCubicalComplex class and making a CubicalComplex which uses it
+  ///           an as underlying implementation -- i.e. a subcomplex of Twisted with right-fringe missing)
+  ///       2. (TwistedCubicalComplex, TopCellValuation) -> GradedComplex
+  ///       3. class LeftExtendedTopCellValuation
+  ///       4. class (CubicalComplex, LeftExtendedTopCellValuation)
+  ///          -- implemented with (TwistedCubicalComplex, TopCellValuation)
+  ///       5. subdivision procedure for (CubicalComplex, LeftExtendedTopCellValuation)
+  ///
+  ///   Alternative design with grading as fundamental:
+  ///       1. (TwistedCubicalComplex, GradingFromTopCellValuation)
+  ///       2. (CubicalComplex, GradingInducedFromLeftExtendedTopCellValuation) 
+  ///            -- impl as (TwistedCubicalComplex, GradingFromTopCellValuation)
+  ///       3. subdivide : 
+  ///            (CubicalComplex, GradingInducedFromLeftExtendedTopCellValuation) x dim -> 
+  ///              (CubicalComplex, GradingInducedFromLeftExtendedTopCellValuation) x 
+  ///              (CubicalComplex, GradingInducedFromLeftExtendedTopCellValuation)
+  ///       4. subdivide1 :  CubicalComplex x dim -> CubicalComplex x CubicalComplex
+  ///       5. subdivide2 :  GIFLETCV x dim -> GIFLETCV x GIFLETCV
+  ///       6. subdivide (x , y) dim = (subdivide1 x dim , subdivide2 y dim)
+  ///       7. glue: CubicalComplex x CubicalComplex x dim -> CubicalComplex
+  ///          glue: GIFLETCV x GIFLETCV x dim -> GIFLETCV
+  ///     actually, for subdivide, we don't want to just get a pair of cubicalcomplex.
+  ///     i d = d i won't hold.   * ------ *
+  ///                             * ------
+  ///     p d = d p ? 
+  /// 
+  ///      * -- *     i     * - *    p           
+  /// 0-->      |   c--->   | # |  ---->> | #  ---> 0      
+  ///           *           * - *         * -          
+  ///
+  ///
+  ///     if subcomplex means a subobject in the category of chain complexes,
+  ///     then the formal definition is (S, i : S to C) 
+  ///     (Q, p : C to Q)
+  ///
+  ///         p          
+  ///     C ---->> Q    every epi in an abelian category is a cokernel.
+  ///                  
+  ///     left-closed quotient complexes.
+  ///     axioms for subdivision: 
+  ///
+  ///
+  ///           |#          | # | #         | #
+  ///           *-    i     * - * -    p    * -       
+  /// 0-->      |#  c--->   | # | #  ---->> | #  ---> 0      
+  ///           *-          * - * -         * -          
+  ///
+  ///   subdivide : CubicalComplex -> QuotientComplex x SubComplex
+  ///   glue      : QuotientComplex x SubComplex -> CubicalComplex
+  ///   
+
   /// CubicalMorseMatching
   CubicalMorseMatching ( std::shared_ptr<GradedComplex> graded_complex_ptr ) : graded_complex_(graded_complex_ptr) {
     complex_ = std::dynamic_pointer_cast<CubicalComplex>(graded_complex_->complex());
