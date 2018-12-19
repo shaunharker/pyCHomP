@@ -183,6 +183,11 @@ public:
     return {canonical, gamma};
   }
 
+  void
+  forget_base(void){
+    base_.reset();
+  }
+  
 private:
   std::shared_ptr<Complex> base_;
   std::shared_ptr<MorseMatching> matching_;
